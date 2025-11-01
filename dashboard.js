@@ -380,13 +380,16 @@ async function showGroupDetails(groupId) {
         } else if (isCreator && group.is_drawn) {
             console.log('DEBUG - Adding UNDO button');
             content += `
-                <div style="margin-top: 20px; background: #fee; padding: 15px; border-radius: 10px;">
-                    <button onclick="undoDrawNames('${groupId}')" class="btn" style="background: var(--red); color: white; width: 100%;">
-                        ↺ Undo Draw & Redraw Names
-                    </button>
-                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
-                        This will clear all assignments so you can draw again
+                <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%); border: 2px solid var(--red); border-radius: 12px; box-shadow: 0 2px 8px rgba(196, 30, 58, 0.2);">
+                    <h4 style="margin: 0 0 10px 0; color: var(--red); font-size: 16px;">
+                        ⚠️ Reset Draw
+                    </h4>
+                    <p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">
+                        Need to redraw? Click below to clear all assignments.
                     </p>
+                    <button onclick="undoDrawNames('${groupId}')" class="btn" style="background: var(--red); color: white; padding: 10px 20px; font-size: 15px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s;">
+                        ↺ Undo & Redraw Names
+                    </button>
                 </div>
             `;
         } else if (isCreator && participantsWithProfiles.length < 2) {
@@ -899,23 +902,29 @@ function createInviteEmailHtml(groupCode, groupPassword, personalMessage, sender
 
 // Display Invite List with Join Status
 function displayInviteList(invites, participants, group) {
+    console.log('displayInviteList called:', { invitesLength: invites.length, participantsLength: participants.length });
+    
     // Get the container where we'll insert the list
     const container = document.getElementById('inviteListContainer');
     
     if (!container) {
-        console.error('inviteListContainer not found');
+        console.error('❌ inviteListContainer element not found in DOM!');
         return;
     }
     
+    console.log('✅ Container found:', container);
+    
     // Clear any existing content
     container.innerHTML = '';
+    container.style.display = 'block';
     
     if (invites.length === 0) {
+        console.log('No invites to display');
         return; // No invites sent yet
     }
     
     // Build the invite list HTML
-    container.style.cssText = 'margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;';
+    container.style.cssText = 'display: block; margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;';
     
     let listHtml = '<h3 style="color: var(--gold); margin-top: 0;">📧 Sent Invitations</h3>';
     listHtml += '<div style="display: flex; flex-direction: column; gap: 10px;">';
@@ -958,18 +967,25 @@ function displayInviteList(invites, participants, group) {
     listHtml += '</div>';
     container.innerHTML = listHtml;
     
+    console.log('✅ Invite list HTML inserted into container');
+    
     // Add event listeners for resend buttons
-    document.querySelectorAll('.btn-resend-invite').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const email = btn.dataset.email;
-            const groupId = btn.dataset.groupId;
-            
-            if (confirm(`Resend invitation to ${email}?`)) {
-                await resendSingleInvite(email, group);
-            }
+    setTimeout(() => {
+        const resendButtons = document.querySelectorAll('.btn-resend-invite');
+        console.log('Found resend buttons:', resendButtons.length);
+        
+        resendButtons.forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const email = btn.dataset.email;
+                const groupId = btn.dataset.groupId;
+                
+                if (confirm(`Resend invitation to ${email}?`)) {
+                    await resendSingleInvite(email, group);
+                }
+            });
         });
-    });
+    }, 100);
 }
 
 // Resend Single Invite
