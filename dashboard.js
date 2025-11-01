@@ -288,6 +288,15 @@ async function showGroupDetails(groupId) {
             isDrawn: group.is_drawn
         });
         
+        // Debug participant profiles
+        console.log('DEBUG - Participants with profiles:', participantsWithProfiles.map(p => ({
+            participantId: p.id,
+            userId: p.user_id,
+            hasProfile: !!p.user_profiles,
+            fullName: p.user_profiles?.full_name,
+            email: p.user_profiles?.email
+        })));
+        
         // Get sent invites if user is creator
         let invites = [];
         if (isCreator) {
@@ -352,13 +361,28 @@ async function showGroupDetails(groupId) {
         
         participantsWithProfiles.forEach(p => {
             const profile = p.user_profiles;
-            const displayName = profile.full_name || profile.email || 'Unknown User';
-            const nameStyle = !profile.full_name ? 'font-style: italic; color: #666;' : '';
+            const displayName = profile ? (profile.full_name || profile.email || 'Unknown User') : 'Unknown User';
+            const nameStyle = !profile?.full_name ? 'font-style: italic; color: #666;' : '';
+            const isCurrentUser = p.user_id === currentUser.id;
+            
             content += `
-                <li style="padding: 10px; background: #f8f9fa; margin-bottom: 5px; border-radius: 5px;">
-                    <span style="${nameStyle}">${displayName}</span>
-                    ${profile.spouse_name ? ` (married to ${profile.spouse_name})` : ''}
-                    ${!profile.full_name && profile.email ? '<small style="color: #999;"> (profile incomplete)</small>' : ''}
+                <li style="padding: 10px; background: #f8f9fa; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="${nameStyle}">${displayName}</span>
+                        ${profile?.spouse_name ? ` (married to ${profile.spouse_name})` : ''}
+                        ${!profile?.full_name && profile?.email ? '<small style="color: #999;"> (profile incomplete)</small>' : ''}
+                        ${!profile ? '<small style="color: #f00;"> (⚠️ profile missing - data error)</small>' : ''}
+                        ${isCurrentUser ? ' <span style="color: var(--gold);">(you)</span>' : ''}
+                    </div>
+                    ${isCreator && !isCurrentUser && !group.is_drawn ? `
+                        <button 
+                            onclick="removeParticipant('${p.id}', '${groupId}', '${displayName}')" 
+                            style="background: #dc2626; color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;"
+                            title="Remove from group"
+                        >
+                            🗑️ Remove
+                        </button>
+                    ` : ''}
                 </li>
             `;
         });
@@ -426,6 +450,36 @@ async function showGroupDetails(groupId) {
     } catch (error) {
         console.error('Error showing group details:', error);
         alert('Error loading group details: ' + error.message);
+    }
+}
+
+// Remove Participant from Group
+async function removeParticipant(participantId, groupId, participantName) {
+    if (!confirm(`Are you sure you want to remove "${participantName}" from this group?\n\nThey will need to rejoin if you want them back.`)) {
+        return;
+    }
+    
+    try {
+        console.log('Removing participant:', participantId);
+        
+        // Delete the participant
+        const { error: deleteError } = await supabase
+            .from('participants')
+            .delete()
+            .eq('id', participantId);
+        
+        if (deleteError) throw deleteError;
+        
+        alert(`✅ ${participantName} has been removed from the group.`);
+        
+        // Refresh the dashboard and group details
+        closeAllModals();
+        await loadGroups();
+        setTimeout(() => showGroupDetails(groupId), 300);
+        
+    } catch (error) {
+        console.error('Error removing participant:', error);
+        alert('Error removing participant: ' + error.message);
     }
 }
 
