@@ -288,11 +288,13 @@ async function showGroupDetails(groupId) {
             isDrawn: group.is_drawn
         });
         
-        // Debug participant profiles
+        // Debug participant profiles - DETAILED
+        console.log('DEBUG - RAW profiles from database:', profiles);
         console.log('DEBUG - Participants with profiles:', participantsWithProfiles.map(p => ({
             participantId: p.id,
             userId: p.user_id,
             hasProfile: !!p.user_profiles,
+            profileObject: p.user_profiles,
             fullName: p.user_profiles?.full_name,
             email: p.user_profiles?.email
         })));
