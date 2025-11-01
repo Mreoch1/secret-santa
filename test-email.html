@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secret Santa Assignment - Test Email</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #0f7c3a 0%, #c41e3a 100%);
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      color: #c41e3a;
+      font-size: 2.5em;
+      text-align: center;
+      margin-bottom: 20px;
+      font-family: 'Mountains of Christmas', cursive, 'Arial', sans-serif;
+    }
+    .gift-box {
+      text-align: center;
+      font-size: 4em;
+      margin: 20px 0;
+      animation: shake 2s infinite;
+    }
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg); }
+      75% { transform: rotate(10deg); }
+    }
+    .assignment {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      margin: 30px 0;
+      border: 3px solid #ffd700;
+    }
+    .assignment p {
+      margin: 10px 0;
+      font-size: 1.1em;
+    }
+    .receiver-name {
+      font-size: 2em;
+      color: #c41e3a;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+    .message {
+      font-size: 1.2em;
+      color: #0f7c3a;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .footer {
+      text-align: center;
+      color: #666;
+      margin-top: 30px;
+      font-size: 0.9em;
+    }
+    .info-box {
+      background: #fff9e6;
+      border-left: 4px solid #ffd700;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎄 Secret Santa Assignment 🎅</h1>
+    <p>Ho ho ho, <strong>Michael Reoch</strong>!</p>
+    <p>Your Secret Santa assignment is ready!</p>
+    
+    <div class="gift-box">🎁</div>
+    
+    <div class="assignment">
+      <p>You're buying a gift for:</p>
+      <p class="receiver-name">Sarah Johnson</p>
+      <p class="message">Happy Shopping! 🎅</p>
+    </div>
+    
+    <p>Remember to keep it a secret! 🤫</p>
+    
+    <div class="info-box">
+      <p><strong>Group:</strong> test group 1</p>
+      <p><strong>Total Participants:</strong> 5</p>
+      <p><strong>Your Assignment:</strong> Sarah Johnson</p>
+    </div>
+    
+    <div class="footer">
+      <p>🎄 Secret Santa 2025 🎄</p>
+      <p>Spreading holiday cheer, one gift at a time!</p>
+      <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+      <p style="font-size: 0.8em; color: #999;">
+        This is a test email preview. In production, this would be sent via Supabase Edge Functions with Resend.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Snowflakes Background -->
+    <div class="snowflakes" aria-hidden="true">
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+    </div>
+
+    <!-- Christmas Lights -->
+    <div class="lightrope">
+        <ul class="lightrope-list">
+            <li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li>
+        </ul>
+    </div>
+
+    <!-- Music Control -->
+    <div class="music-control">
+        <button id="musicToggle" class="music-btn" title="Click to toggle Christmas music">🎵 Play Music</button>
+        <audio id="bgMusic" loop preload="auto">
+            <source src="music/jingle-bells.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🎄 Secret Santa 🎅</h1>
+            <p class="tagline">Your Holiday Gift Exchange Dashboard</p>
+        </header>
+
+        <!-- Dashboard Page -->
+        <div id="dashboardPage" class="page active">
+            <div class="card">
+                <div class="dashboard-header">
+                    <div>
+                        <h2>Welcome, <span id="userName">Loading...</span>! 🎁</h2>
+                        <p style="margin: 5px 0 0 0; opacity: 0.9;">Manage all your Secret Santa groups</p>
+                    </div>
+                    <button id="logoutBtn" class="logout-btn">Sign Out</button>
+                </div>
+
+                <!-- My Groups Section -->
+                <div id="myGroupsSection">
+                    <h3 style="color: var(--primary-green); margin-bottom: 20px;">My Secret Santa Groups</h3>
+                    
+                    <div id="groupsGrid" class="groups-grid">
+                        <!-- Groups will be loaded here dynamically -->
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="empty-state" style="display: none;">
+                        <h3>🎁 No Groups Yet!</h3>
+                        <p>You haven't joined any Secret Santa groups yet.</p>
+                        <p>Click the button below to join or create your first group!</p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons" style="margin-top: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    <button id="joinGroupBtn" class="add-group-btn">+ Join a Group</button>
+                    <button id="createGroupBtn2" class="add-group-btn" style="background: var(--primary-green);">+ Create a Group</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Join Group Modal -->
+        <div id="joinGroupModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close">&times;</span>
+                <h2>Join a Secret Santa Group</h2>
+                <p class="info-text">Enter the group code and password provided by your group organizer</p>
+                
+                <form id="joinGroupForm">
+                    <div class="form-group">
+                        <label for="groupCode">Group Code</label>
+                        <input type="text" id="groupCode" placeholder="e.g., Recon2025" required>
+                        <small>Case-insensitive, no spaces</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="groupPassword">Group Password</label>
+                        <input type="password" id="groupPassword" placeholder="Enter password" required>
+                        <small>🔒 This keeps your group private</small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Join Group 🎄</button>
+                    <button type="button" id="createGroupBtn" class="btn btn-secondary">Create New Group Instead</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Create Group Modal -->
+        <div id="createGroupModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close">&times;</span>
+                <h2>Create a New Group</h2>
+                <p class="info-text">Create a unique code and password for your group</p>
+                
+                <form id="createGroupForm">
+                    <div class="form-group">
+                        <label for="newGroupCode">Group Code</label>
+                        <input type="text" id="newGroupCode" placeholder="e.g., Recon2025" required>
+                        <small>Make it unique and easy to remember!</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newGroupPassword">Group Password</label>
+                        <input type="password" id="newGroupPassword" placeholder="Create a password" required minlength="4">
+                        <small>🔒 Minimum 4 characters - share this with your group members!</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmGroupPassword">Confirm Password</label>
+                        <input type="password" id="confirmGroupPassword" placeholder="Re-enter password" required minlength="4">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Create Group 🎅</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Group Details Modal -->
+        <div id="groupDetailsModal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="modal-close">&times;</span>
+                <h2 id="groupDetailsTitle">Group Details</h2>
+                
+                <div id="groupDetailsContent">
+                    <!-- Content loaded dynamically -->
+                </div>
+                
+                <div id="groupPasswordDisplay" style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 10px; display: none;">
+                    <p style="margin: 0; color: #92400e;"><strong>🔒 Group Password:</strong> <span id="groupPasswordText" style="font-family: monospace;"></span></p>
+                    <small style="color: #78350f;">Share this with new members!</small>
+                </div>
+                
+                <div id="inviteSection" style="margin-top: 20px; display: none;">
+                    <button id="sendInvitesBtn" class="btn btn-primary" style="width: 100%;">
+                        📧 Send Email Invites
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Send Invites Modal -->
+        <div id="sendInvitesModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close">&times;</span>
+                <h2>Send Group Invitations</h2>
+                <p class="info-text">Enter email addresses of people you want to invite to join <strong id="inviteGroupName"></strong></p>
+                
+                <form id="sendInvitesForm">
+                    <div class="form-group">
+                        <label for="inviteEmails">Email Addresses</label>
+                        <textarea id="inviteEmails" rows="5" placeholder="Enter email addresses (one per line)&#10;mreoch82@hotmail.com&#10;brittany@example.com&#10;family@example.com" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; font-family: inherit;"></textarea>
+                        <small>⚠️ Resend free tier: Only sends to mreoch82@hotmail.com (verify domain for others)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="inviteMessage">Personal Message (Optional)</label>
+                        <textarea id="inviteMessage" rows="3" placeholder="Join our family Secret Santa!" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; font-family: inherit;"></textarea>
+                    </div>
+                    
+                    <div class="invite-preview" style="background: #f0fdf4; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                        <p style="margin: 5px 0;"><strong>Invitation will include:</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Group Code: <span id="previewGroupCode"></span></li>
+                            <li>Group Password: <span id="previewGroupPassword"></span></li>
+                            <li>Link to join the site</li>
+                            <li>Your personal message</li>
+                        </ul>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">📧 Send Email Invitations</button>
+                    <p style="text-align: center; color: #666; font-size: 0.9em; margin-top: 10px;">
+                        Emails will be sent via Resend API ✅
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🎄 Made with holiday cheer | Secret Santa 2025 🎅</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="dashboard-production.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
+

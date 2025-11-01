@@ -1,0 +1,28 @@
+# Environment variables
+.env
+.env.local
+
+# Node modules (if any)
+node_modules/
+
+# Supabase
+.supabase/
+
+# Netlify
+.netlify/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
