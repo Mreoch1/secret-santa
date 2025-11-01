@@ -817,10 +817,13 @@ async function handleSendInvites() {
     }
     
     try {
-        // Send emails directly via Resend API
+        // Send emails via Netlify function
         const siteUrl = window.location.origin;
         let emailsSent = 0;
         let emailsFailed = 0;
+        
+        console.log('Sending invites to:', emails);
+        console.log('Using endpoint:', window.EMAIL_ENDPOINT);
         
         for (const email of emails) {
             const emailHtml = createInviteEmailHtml(
@@ -836,6 +839,8 @@ async function handleSendInvites() {
                 // Determine email endpoint based on environment
                 const emailEndpoint = window.EMAIL_ENDPOINT || 'http://localhost:5001/send-email';
                 
+                console.log(`Sending to ${email} via ${emailEndpoint}`);
+                
                 const response = await fetch(emailEndpoint, {
                     method: 'POST',
                     headers: {
@@ -849,7 +854,16 @@ async function handleSendInvites() {
                     })
                 });
                 
-                const result = await response.json();
+                let result;
+                const responseText = await response.text();
+                console.log('Response:', responseText);
+                
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Failed to parse response:', responseText);
+                    throw new Error(`Invalid response from server: ${responseText.substring(0, 100)}`);
+                }
                 
                 if (response.ok && result.success) {
                     emailsSent++;
@@ -923,7 +937,18 @@ async function handleSendInvites() {
         
     } catch (error) {
         console.error('Error sending invites:', error);
-        alert('Error sending invites. Please try again or share the group code manually.');
+        console.error('Error details:', error.message, error.stack);
+        
+        // More helpful error message
+        let errorMsg = 'Error sending invites.\n\n';
+        errorMsg += 'Details: ' + error.message + '\n\n';
+        errorMsg += 'Please check:\n';
+        errorMsg += '1. Your internet connection\n';
+        errorMsg += '2. Email addresses are valid\n';
+        errorMsg += '3. Try again in a moment\n\n';
+        errorMsg += 'Or share the group code and password manually.';
+        
+        alert(errorMsg);
     }
 }
 
