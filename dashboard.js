@@ -374,19 +374,44 @@ async function showGroupDetails(groupId) {
             <ul style="list-style: none; padding: 0;">
         `;
         
+        // Get blocklist to show who's blocked with whom
+        const { data: blocks } = await supabase
+            .from('participant_blocks')
+            .select('*')
+            .eq('group_id', groupId);
+        
         participantsWithProfiles.forEach(p => {
             const profile = p.user_profiles;
             const displayName = profile ? (profile.full_name || profile.email || 'Unknown User') : 'Unknown User';
             const nameStyle = !profile?.full_name ? 'font-style: italic; color: #666;' : '';
             const isCurrentUser = p.user_id === currentUser.id;
-            const spouseDisplay = profile?.spouse_name ? ` (married to <strong>${profile.spouse_name}</strong>)` : isCreator ? ' <span style="color: #999;">(no spouse set)</span>' : '';
+            
+            // Find who this person is blocked with
+            const blockedWith = [];
+            blocks?.forEach(block => {
+                if (block.participant_a_id === p.id) {
+                    const blockedPerson = participantsWithProfiles.find(pp => pp.id === block.participant_b_id);
+                    if (blockedPerson?.user_profiles?.full_name) {
+                        blockedWith.push(blockedPerson.user_profiles.full_name);
+                    }
+                } else if (block.participant_b_id === p.id) {
+                    const blockedPerson = participantsWithProfiles.find(pp => pp.id === block.participant_a_id);
+                    if (blockedPerson?.user_profiles?.full_name) {
+                        blockedWith.push(blockedPerson.user_profiles.full_name);
+                    }
+                }
+            });
+            
+            const blockDisplay = blockedWith.length > 0 
+                ? ` <span style="color: #dc2626; font-size: 13px;">(🚫 blocked: ${blockedWith.join(', ')})</span>`
+                : '';
             
             content += `
                 <li style="padding: 10px; background: #f8f9fa; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
                     <div style="flex: 1;">
                         <div>
                             <span style="${nameStyle}">${displayName}</span>
-                            ${spouseDisplay}
+                            ${blockDisplay}
                             ${!profile?.full_name && profile?.email ? '<small style="color: #999;"> (profile incomplete)</small>' : ''}
                             ${!profile ? '<small style="color: #f00;"> (⚠️ profile missing - data error)</small>' : ''}
                             ${isCurrentUser ? ' <span style="color: var(--gold);">(you)</span>' : ''}
@@ -396,9 +421,9 @@ async function showGroupDetails(groupId) {
                     ${isCreator && !group.is_drawn ? `
                         <div style="display: flex; gap: 5px;">
                             <button 
-                                onclick="editParticipant('${p.user_id}', '${displayName}', '${profile?.spouse_name || ''}')" 
+                                onclick="editParticipant('${p.user_id}', '${displayName}')" 
                                 style="background: var(--gold); color: #333; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;"
-                                title="Edit name and spouse"
+                                title="Edit name"
                             >
                                 ✏️ Edit
                             </button>
@@ -751,79 +776,52 @@ async function deleteGroup(groupId, groupCode) {
     }
 }
 
-// Edit Participant Name and Spouse
-async function editParticipant(userId, currentName, currentSpouse) {
+// Edit Participant Name
+async function editParticipant(userId, currentName) {
     const newName = prompt(
-        `Edit Participant Information\n\n` +
+        `Edit Participant Name\n\n` +
         `Current Name: ${currentName}\n\n` +
-        `Enter new name (or press Enter to keep current):`,
+        `Enter new name:`,
         currentName
     );
     
-    if (newName === null) return; // Cancelled
-    
-    const newSpouse = prompt(
-        `Edit Spouse Name\n\n` +
-        `Current Spouse: ${currentSpouse || '(none)'}\n\n` +
-        `Enter spouse name (or leave empty for none):`,
-        currentSpouse || ''
-    );
-    
-    if (newSpouse === null) return; // Cancelled
+    if (newName === null || newName.trim() === '') return; // Cancelled or empty
     
     try {
-        console.log('🔄 Updating participant:', userId);
-        console.log('Current values:', { currentName, currentSpouse });
-        console.log('New values:', { newName, newSpouse });
-        console.log('Will save:', { 
-            full_name: newName.trim() || currentName,
-            spouse_name: newSpouse.trim() || null 
-        });
-        
-        const updateData = {
-            full_name: newName.trim() || currentName,
-            spouse_name: newSpouse.trim() || null,
-            updated_at: new Date().toISOString()
-        };
-        
-        console.log('Sending update to Supabase:', updateData);
+        console.log('🔄 Updating participant name:', userId);
+        console.log('New name:', newName);
         
         const { data, error } = await supabase
             .from('user_profiles')
-            .update(updateData)
+            .update({
+                full_name: newName.trim(),
+                updated_at: new Date().toISOString()
+            })
             .eq('id', userId)
             .select();
         
-        console.log('Supabase response:', { data, error });
-        
         if (error) {
-            console.error('❌ Update error details:', {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code
-            });
+            console.error('❌ Update error:', error);
             throw error;
         }
         
-        console.log('✅ Update successful! Returned data:', data);
+        console.log('✅ Name updated successfully');
         
-        alert(`✅ Updated successfully!\n\nName: ${newName}\nSpouse: ${newSpouse || '(none)'}`);
+        alert(`✅ Name updated to: ${newName}`);
         
         // Reload the group details
         const groupId = document.getElementById('groupDetailsModal').dataset.currentGroupId;
         if (groupId) {
             closeAllModals();
-            await loadGroups(); // Refresh all data
+            await loadGroups();
             setTimeout(() => showGroupDetails(groupId), 500);
         } else {
-            // Fallback: reload groups
             await loadGroups();
         }
         
     } catch (error) {
         console.error('❌ Error updating participant:', error);
-        alert(`Error updating participant:\n\n${error.message}\n\nThe participant may need to update their own profile in Settings.`);
+        alert(`Error updating participant: ${error.message}`);
     }
 }
 
@@ -1193,10 +1191,6 @@ function performSecretSantaMatching(participants, groupId) {
                 
                 // Can't give to self
                 if (receiver.id === giver.id) return false;
-                
-                // Can't give to spouse (check both directions by name)
-                if (giverProfile.spouse_name && receiverProfile.full_name === giverProfile.spouse_name) return false;
-                if (receiverProfile.spouse_name && giverProfile.full_name === receiverProfile.spouse_name) return false;
                 
                 // Can't give to blocked participants (check blocklist)
                 if (window.currentBlocks) {
