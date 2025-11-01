@@ -588,33 +588,42 @@ async function editParticipant(userId, currentName, currentSpouse) {
     if (newSpouse === null) return; // Cancelled
     
     try {
-        console.log('Updating participant:', userId);
+        console.log('🔄 Updating participant:', userId);
+        console.log('New values:', { name: newName, spouse: newSpouse });
         
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('user_profiles')
             .update({
                 full_name: newName.trim() || currentName,
                 spouse_name: newSpouse.trim() || null,
                 updated_at: new Date().toISOString()
             })
-            .eq('id', userId);
+            .eq('id', userId)
+            .select();
         
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Update error:', error);
+            throw error;
+        }
+        
+        console.log('✅ Update successful:', data);
         
         alert(`✅ Updated successfully!\n\nName: ${newName}\nSpouse: ${newSpouse || '(none)'}`);
         
         // Reload the group details
         const groupId = document.getElementById('groupDetailsModal').dataset.currentGroupId;
         if (groupId) {
-            setTimeout(() => showGroupDetails(groupId), 300);
+            closeAllModals();
+            await loadGroups(); // Refresh all data
+            setTimeout(() => showGroupDetails(groupId), 500);
         } else {
             // Fallback: reload groups
             await loadGroups();
         }
         
     } catch (error) {
-        console.error('Error updating participant:', error);
-        alert('Error updating participant: ' + error.message);
+        console.error('❌ Error updating participant:', error);
+        alert(`Error updating participant:\n\n${error.message}\n\nThe participant may need to update their own profile in Settings.`);
     }
 }
 
