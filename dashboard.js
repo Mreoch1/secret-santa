@@ -352,10 +352,13 @@ async function showGroupDetails(groupId) {
         
         participantsWithProfiles.forEach(p => {
             const profile = p.user_profiles;
+            const displayName = profile.full_name || profile.email || 'Unknown User';
+            const nameStyle = !profile.full_name ? 'font-style: italic; color: #666;' : '';
             content += `
                 <li style="padding: 10px; background: #f8f9fa; margin-bottom: 5px; border-radius: 5px;">
-                    ${profile.full_name}
+                    <span style="${nameStyle}">${displayName}</span>
                     ${profile.spouse_name ? ` (married to ${profile.spouse_name})` : ''}
+                    ${!profile.full_name && profile.email ? '<small style="color: #999;"> (profile incomplete)</small>' : ''}
                 </li>
             `;
         });
