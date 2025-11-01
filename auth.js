@@ -122,7 +122,8 @@ async function handleSignUp(e) {
                 id: authData.user.id,
                 full_name: fullName,
                 spouse_name: spouseName,
-                music_consent: musicConsent
+                music_consent: musicConsent,
+                email: authData.user.email
             }]);
         
         if (profileError) {

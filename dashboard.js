@@ -56,7 +56,8 @@ async function loadUserProfile() {
                     id: currentUser.id,
                     full_name: name,
                     spouse_name: null,
-                    music_consent: false
+                    music_consent: false,
+                    email: currentUser.email
                 }])
                 .select()
                 .single();
@@ -261,7 +262,7 @@ async function showGroupDetails(groupId) {
         const userIds = participants.map(p => p.user_id);
         const { data: profiles, error: profilesError } = await supabase
             .from('user_profiles')
-            .select('id, full_name, spouse_name')
+            .select('id, full_name, spouse_name, email')
             .in('id', userIds);
         
         if (profilesError) throw profilesError;
@@ -278,6 +279,20 @@ async function showGroupDetails(groupId) {
         // Check if current user is creator
         const currentUserParticipant = participantsWithProfiles.find(p => p.user_id === currentUser.id);
         const isCreator = group.created_by === currentUserParticipant?.id;
+        
+        // Get sent invites if user is creator
+        let invites = [];
+        if (isCreator) {
+            const { data: invitesData, error: invitesError } = await supabase
+                .from('group_invites')
+                .select('*')
+                .eq('group_id', groupId)
+                .order('sent_at', { ascending: false });
+            
+            if (!invitesError && invitesData) {
+                invites = invitesData;
+            }
+        }
         
         // Build modal content
         document.getElementById('groupDetailsTitle').textContent = group.group_code;
@@ -299,6 +314,9 @@ async function showGroupDetails(groupId) {
                 // Setup invite button click handler
                 const sendInvitesBtn = document.getElementById('sendInvitesBtn');
                 sendInvitesBtn.onclick = () => openInviteModal(group);
+                
+                // Show invite tracking list
+                displayInviteList(invites, participantsWithProfiles, group);
             } else {
                 // Show message that password should be set
                 passwordDisplay.innerHTML = '<p style="color: #92400e; margin: 0;">⚠️ This group was created without a password. Anyone can join!</p>';
@@ -814,6 +832,139 @@ function createInviteEmailHtml(groupCode, groupPassword, personalMessage, sender
     `;
 }
 
+// Display Invite List with Join Status
+function displayInviteList(invites, participants, group) {
+    const inviteSection = document.getElementById('inviteSection');
+    
+    // Remove existing invite list if any
+    const existingList = document.getElementById('inviteListContainer');
+    if (existingList) {
+        existingList.remove();
+    }
+    
+    if (invites.length === 0) {
+        return; // No invites sent yet
+    }
+    
+    // Get all participant emails by looking up user profiles
+    const participantUserIds = participants.map(p => p.user_id);
+    
+    // Create invite list container
+    const listContainer = document.createElement('div');
+    listContainer.id = 'inviteListContainer';
+    listContainer.style.cssText = 'margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;';
+    
+    let listHtml = '<h3 style="color: var(--gold); margin-top: 0;">📧 Sent Invitations</h3>';
+    listHtml += '<div style="display: flex; flex-direction: column; gap: 10px;">';
+    
+    invites.forEach(invite => {
+        // Check if this email has joined by looking for a participant with this email
+        const hasJoined = participants.some(p => 
+            p.user_profiles && p.user_profiles.email && 
+            p.user_profiles.email.toLowerCase() === invite.email.toLowerCase()
+        );
+        
+        const statusIcon = hasJoined ? '✅' : '⏳';
+        const statusText = hasJoined ? 'Joined' : 'Pending';
+        const statusColor = hasJoined ? '#10b981' : '#f59e0b';
+        
+        listHtml += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                <div style="flex: 1;">
+                    <span style="color: white; font-weight: 500;">${invite.email}</span>
+                    <br>
+                    <small style="color: #9ca3af;">Sent ${new Date(invite.sent_at).toLocaleDateString()}</small>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: ${statusColor}; font-weight: 600;">${statusIcon} ${statusText}</span>
+                    ${!hasJoined ? `
+                        <button 
+                            class="btn-resend-invite" 
+                            data-email="${invite.email}" 
+                            data-group-id="${group.id}"
+                            style="padding: 5px 12px; background: var(--green); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;"
+                        >
+                            🔄 Resend
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    listHtml += '</div>';
+    listContainer.innerHTML = listHtml;
+    
+    // Insert before the send invites button
+    inviteSection.parentNode.insertBefore(listContainer, inviteSection);
+    
+    // Add event listeners for resend buttons
+    document.querySelectorAll('.btn-resend-invite').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = btn.dataset.email;
+            const groupId = btn.dataset.groupId;
+            
+            if (confirm(`Resend invitation to ${email}?`)) {
+                await resendSingleInvite(email, group);
+            }
+        });
+    });
+}
+
+// Resend Single Invite
+async function resendSingleInvite(email, group) {
+    try {
+        const siteUrl = window.location.origin;
+        const senderName = userProfile?.full_name || currentUser?.email || 'Your Friend';
+        
+        const emailHtml = createInviteEmailHtml(
+            group.group_code,
+            group.group_password,
+            'Reminder: You\'re invited to join our Secret Santa!',
+            senderName,
+            siteUrl,
+            email
+        );
+        
+        const emailEndpoint = window.EMAIL_ENDPOINT || 'http://localhost:5001/send-email';
+        
+        const response = await fetch(emailEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: 'Secret Santa <santa@holidaydrawnames.com>',
+                to: [email],
+                subject: `🎅 Reminder: Join Secret Santa - ${group.group_code}`,
+                html: emailHtml
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            alert(`✅ Reminder sent to ${email}!`);
+            
+            // Update timestamp in database
+            await supabase
+                .from('group_invites')
+                .update({ sent_at: new Date().toISOString() })
+                .eq('group_id', group.id)
+                .eq('email', email);
+            
+            // Refresh group details
+            setTimeout(() => showGroupDetails(group.id), 300);
+        } else {
+            alert(`❌ Failed to send reminder to ${email}. Please try again.`);
+        }
+    } catch (error) {
+        console.error('Error resending invite:', error);
+        alert('Error sending reminder. Please try again.');
+    }
+}
+
 // Open Invite Modal
 function openInviteModal(group) {
     // Close group details modal
@@ -907,6 +1058,16 @@ async function handleSendInvites() {
                 if (response.ok && result.success) {
                     emailsSent++;
                     console.log('✅ Email sent to:', email);
+                    
+                    // Save invite to database
+                    await supabase
+                        .from('group_invites')
+                        .upsert({
+                            group_id: group.id,
+                            email: email,
+                            sent_by: currentUser.id
+                        }, { onConflict: 'group_id,email' });
+                    
                 } else {
                     emailsFailed++;
                     console.error('Failed to send to', email, result.error);
@@ -971,7 +1132,7 @@ async function handleSendInvites() {
         closeAllModals();
         document.getElementById('sendInvitesForm').reset();
         
-        // Reopen group details
+        // Reopen group details to refresh invite list
         setTimeout(() => showGroupDetails(group.id), 300);
         
     } catch (error) {
