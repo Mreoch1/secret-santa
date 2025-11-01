@@ -86,11 +86,10 @@ async function handleSignIn(e) {
 async function handleSignUp(e) {
     e.preventDefault();
     
-    const fullName = document.getElementById('signUpName').value.trim();
-    const email = document.getElementById('signUpEmail').value.trim();
-    const password = document.getElementById('signUpPassword').value;
-    const spouseName = document.getElementById('signUpSpouse').value.trim() || null;
-    const musicConsent = document.getElementById('musicConsent').checked;
+        const fullName = document.getElementById('signUpName').value.trim();
+        const email = document.getElementById('signUpEmail').value.trim();
+        const password = document.getElementById('signUpPassword').value;
+        const musicConsent = document.getElementById('musicConsent').checked;
     const cookieConsent = document.getElementById('cookieConsent').checked;
     
     if (!cookieConsent) {
@@ -121,7 +120,7 @@ async function handleSignUp(e) {
             .insert([{
                 id: authData.user.id,
                 full_name: fullName,
-                spouse_name: spouseName,
+                spouse_name: null,
                 music_consent: musicConsent,
                 email: authData.user.email
             }]);

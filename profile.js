@@ -44,7 +44,6 @@ async function loadProfile() {
         
         // Populate form
         document.getElementById('fullName').value = profile.full_name || '';
-        document.getElementById('spouseName').value = profile.spouse_name || '';
         document.getElementById('email').value = profile.email || currentUser.email;
         
     } catch (error) {
@@ -80,7 +79,6 @@ async function handleProfileUpdate(e) {
     e.preventDefault();
     
     const fullName = document.getElementById('fullName').value.trim();
-    const spouseName = document.getElementById('spouseName').value.trim() || null;
     
     if (!fullName) {
         alert('Please enter your full name');
@@ -92,7 +90,6 @@ async function handleProfileUpdate(e) {
             .from('user_profiles')
             .update({
                 full_name: fullName,
-                spouse_name: spouseName,
                 updated_at: new Date().toISOString()
             })
             .eq('id', currentUser.id);
