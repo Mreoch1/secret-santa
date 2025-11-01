@@ -43,14 +43,51 @@ async function loadUserProfile() {
             .eq('id', currentUser.id)
             .single();
         
-        if (error) throw error;
+        if (error) {
+            console.error('Error loading profile:', error);
+            
+            // Profile doesn't exist, create a basic one
+            const email = currentUser.email || 'User';
+            const name = email.split('@')[0]; // Use email prefix as name
+            
+            const { data: newProfile, error: createError } = await supabase
+                .from('user_profiles')
+                .insert([{
+                    id: currentUser.id,
+                    full_name: name,
+                    spouse_name: null,
+                    music_consent: false
+                }])
+                .select()
+                .single();
+            
+            if (!createError && newProfile) {
+                userProfile = newProfile;
+            } else {
+                // Fallback if still failing
+                userProfile = {
+                    id: currentUser.id,
+                    full_name: name,
+                    spouse_name: null,
+                    music_consent: false
+                };
+            }
+        } else {
+            userProfile = data;
+        }
         
-        userProfile = data;
-        document.getElementById('userName').textContent = userProfile.full_name;
+        document.getElementById('userName').textContent = userProfile.full_name || currentUser.email;
         
     } catch (error) {
         console.error('Error loading profile:', error);
-        document.getElementById('userName').textContent = currentUser.email;
+        // Absolute fallback
+        userProfile = {
+            id: currentUser.id,
+            full_name: currentUser.email?.split('@')[0] || 'User',
+            spouse_name: null,
+            music_consent: false
+        };
+        document.getElementById('userName').textContent = userProfile.full_name;
     }
 }
 
@@ -826,11 +863,13 @@ async function handleSendInvites() {
         console.log('Using endpoint:', window.EMAIL_ENDPOINT);
         
         for (const email of emails) {
+            const senderName = userProfile?.full_name || currentUser?.email || 'Your Friend';
+            
             const emailHtml = createInviteEmailHtml(
                 group.group_code,
                 group.group_password,
                 personalMessage,
-                userProfile.full_name,
+                senderName,
                 siteUrl,
                 email
             );
