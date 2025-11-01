@@ -16,68 +16,83 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
 });
 
-// Music Control - Auto-starts on ANY user interaction
+// Music Control - ALWAYS ON by default
 function initMusic() {
     const musicToggle = document.getElementById('musicToggle');
     const bgMusic = document.getElementById('bgMusic');
-    let musicStarted = false;
     
-    // Set initial volume and loop
-    bgMusic.volume = 0.3; // Lower volume so it's not too loud
+    if (!bgMusic) return;
+    
+    // Set volume and loop
+    bgMusic.volume = 0.3;
     bgMusic.loop = true;
     
-    // Function to start music
-    const startMusic = async () => {
-        if (!musicStarted) {
-            try {
-                bgMusic.currentTime = 0;
-                const playPromise = bgMusic.play();
-                
-                if (playPromise !== undefined) {
-                    await playPromise;
-                    if (musicToggle) {
-                        musicToggle.textContent = '🔇 Pause Music';
-                        musicToggle.classList.add('playing');
-                    }
-                    musicStarted = true;
-                    console.log('🎵 Music started automatically!');
-                }
-            } catch (error) {
-                console.log('Music autoplay prevented:', error.message);
-                if (musicToggle) {
-                    musicToggle.textContent = '🎵 Play Music';
-                    musicToggle.classList.remove('playing');
-                }
+    // Try to start immediately
+    const attemptAutoplay = async () => {
+        try {
+            await bgMusic.play();
+            if (musicToggle) {
+                musicToggle.textContent = '🔇 Pause Music';
+                musicToggle.classList.add('playing');
+            }
+            console.log('🎵 Music playing!');
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
+    
+    // Attempt 1: Try immediately on load
+    attemptAutoplay();
+    
+    // Attempt 2: Try on EVERY type of interaction until it works
+    const tryPlay = async () => {
+        if (bgMusic.paused) {
+            const success = await attemptAutoplay();
+            if (success) {
+                // Remove all listeners once playing
+                document.removeEventListener('mousemove', tryPlay);
+                document.removeEventListener('mousedown', tryPlay);
+                document.removeEventListener('mouseenter', tryPlay);
+                document.removeEventListener('click', tryPlay);
+                document.removeEventListener('touchstart', tryPlay);
+                document.removeEventListener('touchmove', tryPlay);
+                document.removeEventListener('keydown', tryPlay);
+                document.removeEventListener('scroll', tryPlay);
             }
         }
     };
     
-    // AUTOMATIC START on first interaction
-    const handleFirstInteraction = async () => {
-        await startMusic();
-    };
+    // Listen for EVERYTHING
+    document.addEventListener('mousemove', tryPlay);
+    document.addEventListener('mousedown', tryPlay);
+    document.addEventListener('mouseenter', tryPlay);
+    document.addEventListener('click', tryPlay, { capture: true });
+    document.addEventListener('touchstart', tryPlay, { capture: true });
+    document.addEventListener('touchmove', tryPlay);
+    document.addEventListener('keydown', tryPlay);
+    document.addEventListener('scroll', tryPlay);
     
-    // Listen for ANY interaction - music starts automatically!
-    document.addEventListener('click', handleFirstInteraction, { capture: true, once: true });
-    document.addEventListener('touchstart', handleFirstInteraction, { capture: true, once: true });
-    document.addEventListener('keydown', handleFirstInteraction, { capture: true, once: true });
-    document.addEventListener('mousemove', handleFirstInteraction, { once: true });
-    document.addEventListener('scroll', handleFirstInteraction, { once: true });
+    // Keep trying every 500ms for the first 3 seconds
+    let attempts = 0;
+    const retryInterval = setInterval(async () => {
+        if (bgMusic.paused && attempts < 6) {
+            await attemptAutoplay();
+            attempts++;
+        } else {
+            clearInterval(retryInterval);
+        }
+    }, 500);
     
-    // Toggle music on button click (pause/play)
+    // Pause/Play toggle button
     if (musicToggle) {
         musicToggle.addEventListener('click', async (e) => {
             e.stopPropagation();
             
             if (bgMusic.paused) {
-                try {
-                    await bgMusic.play();
-                    musicToggle.textContent = '🔇 Pause Music';
-                    musicToggle.classList.add('playing');
-                    musicStarted = true;
-                } catch (error) {
-                    console.error('Failed to play music:', error);
-                }
+                await bgMusic.play();
+                musicToggle.textContent = '🔇 Pause Music';
+                musicToggle.classList.add('playing');
             } else {
                 bgMusic.pause();
                 musicToggle.textContent = '🎵 Play Music';
