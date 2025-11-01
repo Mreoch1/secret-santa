@@ -534,11 +534,11 @@ async function drawNames(groupId) {
         
         if (participantsError) throw participantsError;
         
-        // Get user profiles for participants
+        // Get user profiles for participants (need email for notifications)
         const userIds = participants.map(p => p.user_id);
         const { data: profiles, error: profilesError } = await supabase
             .from('user_profiles')
-            .select('id, full_name, spouse_name')
+            .select('id, full_name, spouse_name, email')
             .in('id', userIds);
         
         if (profilesError) throw profilesError;
@@ -581,7 +581,19 @@ async function drawNames(groupId) {
         
         if (updateError) throw updateError;
         
-        alert('Names drawn successfully! All participants can now see their assignments.');
+        // Get group details for emails
+        const { data: group, error: groupError } = await supabase
+            .from('groups')
+            .select('*')
+            .eq('id', groupId)
+            .single();
+        
+        if (!groupError && group) {
+            // Send email notifications to all participants
+            await sendDrawNotifications(assignments, participantsWithProfiles, group);
+        }
+        
+        alert('🎉 Names drawn successfully!\n\nAll participants have been emailed their Secret Santa assignments!');
         
         // Close modal and reload groups
         document.getElementById('groupDetailsModal').style.display = 'none';
@@ -591,6 +603,178 @@ async function drawNames(groupId) {
         console.error('Error drawing names:', error);
         alert('Error drawing names: ' + error.message);
     }
+}
+
+// Send Draw Notifications to All Participants
+async function sendDrawNotifications(assignments, participants, group) {
+    console.log('📧 Sending draw notifications to all participants...');
+    
+    const emailEndpoint = window.EMAIL_ENDPOINT || 'http://localhost:5001/send-email';
+    const siteUrl = window.location.origin;
+    let emailsSent = 0;
+    let emailsFailed = 0;
+    
+    for (const assignment of assignments) {
+        try {
+            // Find the giver (person buying the gift)
+            const giver = participants.find(p => p.id === assignment.giver_id);
+            if (!giver || !giver.user_profiles) continue;
+            
+            // Find the receiver (person getting the gift)
+            const receiver = participants.find(p => p.id === assignment.receiver_id);
+            if (!receiver || !receiver.user_profiles) continue;
+            
+            const giverEmail = giver.user_profiles.email;
+            const giverName = giver.user_profiles.full_name || giverEmail;
+            const receiverName = receiver.user_profiles.full_name || 'your Secret Santa recipient';
+            
+            if (!giverEmail) {
+                console.error('No email for participant:', giverName);
+                emailsFailed++;
+                continue;
+            }
+            
+            // Create email HTML
+            const emailHtml = createDrawNotificationEmail(
+                giverName,
+                receiverName,
+                group.group_code,
+                siteUrl
+            );
+            
+            console.log(`Sending assignment email to ${giverName} (${giverEmail})`);
+            
+            const response = await fetch(emailEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    from: 'Secret Santa <santa@holidaydrawnames.com>',
+                    to: [giverEmail],
+                    subject: `🎅 Your Secret Santa Assignment - ${group.group_code}`,
+                    html: emailHtml
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                emailsSent++;
+                console.log('✅ Email sent to:', giverName);
+            } else {
+                emailsFailed++;
+                console.error('❌ Failed to send to', giverName, result.error);
+            }
+            
+        } catch (error) {
+            emailsFailed++;
+            console.error('Error sending email:', error);
+        }
+    }
+    
+    console.log(`📧 Email summary: ${emailsSent} sent, ${emailsFailed} failed`);
+}
+
+// Create Draw Notification Email HTML
+function createDrawNotificationEmail(giverName, receiverName, groupCode, siteUrl) {
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Your Secret Santa Assignment</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); min-height: 100vh;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); padding: 40px 20px;">
+                <tr>
+                    <td align="center">
+                        <table width="600" cellpadding="0" cellspacing="0" border="0" style="background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); overflow: hidden; max-width: 100%;">
+                            
+                            <!-- Header with Christmas Lights -->
+                            <tr>
+                                <td style="background: linear-gradient(135deg, #c41e3a 0%, #a01729 100%); padding: 30px 40px; text-align: center; position: relative;">
+                                    <div style="font-size: 40px; margin-bottom: 10px;">🎅</div>
+                                    <h1 style="color: white; margin: 0; font-size: 32px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                                        Your Secret Santa Assignment!
+                                    </h1>
+                                    <p style="color: #ffe5e5; margin: 10px 0 0 0; font-size: 14px;">
+                                        Group: <strong>${groupCode}</strong>
+                                    </p>
+                                </td>
+                            </tr>
+                            
+                            <!-- Main Content -->
+                            <tr>
+                                <td style="padding: 40px;">
+                                    <p style="color: #333; font-size: 18px; line-height: 1.6; margin: 0 0 20px 0;">
+                                        Ho ho ho, ${giverName}! 🎄
+                                    </p>
+                                    
+                                    <p style="color: #555; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+                                        The names have been drawn! Here's your Secret Santa assignment:
+                                    </p>
+                                    
+                                    <!-- Assignment Box -->
+                                    <div style="background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%); border: 3px solid #c41e3a; border-radius: 15px; padding: 30px; text-align: center; margin: 30px 0;">
+                                        <p style="color: #666; margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+                                            🎁 You're buying a gift for 🎁
+                                        </p>
+                                        <h2 style="color: #c41e3a; margin: 0; font-size: 36px; font-weight: bold;">
+                                            ${receiverName}
+                                        </h2>
+                                    </div>
+                                    
+                                    <!-- Important Reminders -->
+                                    <div style="background: #f8f9fa; border-left: 4px solid #0f7c3a; padding: 20px; margin: 30px 0; border-radius: 8px;">
+                                        <p style="color: #333; margin: 0 0 10px 0; font-weight: bold; font-size: 16px;">
+                                            🎅 Important Reminders:
+                                        </p>
+                                        <ul style="color: #555; margin: 10px 0; padding-left: 20px; line-height: 1.8;">
+                                            <li><strong>Keep it secret!</strong> Don't tell anyone who you got</li>
+                                            <li><strong>Budget:</strong> Check with your group organizer for spending limits</li>
+                                            <li><strong>Deadline:</strong> Make sure to have your gift ready on time</li>
+                                            <li><strong>Have fun!</strong> The joy is in the giving 🎄</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Call to Action -->
+                                    <div style="text-align: center; margin: 40px 0 20px 0;">
+                                        <a href="${siteUrl}/dashboard.html" style="display: inline-block; background: linear-gradient(135deg, #0f7c3a 0%, #0d6630 100%); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(15, 124, 58, 0.3);">
+                                            View Dashboard
+                                        </a>
+                                    </div>
+                                    
+                                    <p style="color: #888; font-size: 14px; text-align: center; margin: 20px 0 0 0; line-height: 1.6;">
+                                        You can always check your assignment by signing in to your dashboard at<br>
+                                        <a href="${siteUrl}" style="color: #c41e3a; text-decoration: none;">${siteUrl}</a>
+                                    </p>
+                                </td>
+                            </tr>
+                            
+                            <!-- Footer -->
+                            <tr>
+                                <td style="background: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e0e0e0;">
+                                    <p style="color: #666; font-size: 14px; margin: 0 0 10px 0;">
+                                        🎄 <strong>Holiday Draw Names</strong> 🎄
+                                    </p>
+                                    <p style="color: #999; font-size: 12px; margin: 0;">
+                                        Making Secret Santa easy and fun!
+                                    </p>
+                                    <p style="color: #999; font-size: 12px; margin: 10px 0 0 0;">
+                                        <a href="${siteUrl}" style="color: #c41e3a; text-decoration: none;">holidaydrawnames.com</a>
+                                    </p>
+                                </td>
+                            </tr>
+                            
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+    `;
 }
 
 // Secret Santa Matching Algorithm
