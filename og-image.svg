@@ -1,0 +1,37 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a472a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0f7c3a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c41e3a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Snowflakes -->
+  <text x="100" y="100" fill="white" opacity="0.5" font-size="40">❅</text>
+  <text x="300" y="200" fill="white" opacity="0.5" font-size="40">❆</text>
+  <text x="900" y="150" fill="white" opacity="0.5" font-size="40">❅</text>
+  <text x="1050" y="400" fill="white" opacity="0.5" font-size="40">❆</text>
+  <text x="200" y="550" fill="white" opacity="0.5" font-size="40">❅</text>
+  
+  <!-- Main Card -->
+  <rect x="200" y="115" width="800" height="400" rx="30" fill="white" opacity="0.98"/>
+  <rect x="200" y="115" width="800" height="400" rx="30" fill="none" stroke="#ffd700" stroke-width="8"/>
+  
+  <!-- Emojis -->
+  <text x="600" y="220" text-anchor="middle" font-size="100">🎅🎄🎁</text>
+  
+  <!-- Title -->
+  <text x="600" y="330" text-anchor="middle" font-family="Arial Black, Arial" font-size="90" font-weight="900" fill="#c41e3a">Secret Santa</text>
+  <text x="603" y="333" text-anchor="middle" font-family="Arial Black, Arial" font-size="90" font-weight="900" fill="#ffd700">Secret Santa</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="395" text-anchor="middle" font-family="Arial" font-size="38" font-weight="bold" fill="#0f7c3a">Free Online Gift Exchange</text>
+  
+  <!-- URL -->
+  <text x="600" y="450" text-anchor="middle" font-family="Arial" font-size="28" fill="#666">holidaydrawnames.com</text>
+</svg>
+
