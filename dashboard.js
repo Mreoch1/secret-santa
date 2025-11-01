@@ -260,12 +260,25 @@ async function showGroupDetails(groupId) {
         
         // Get user profiles for each participant
         const userIds = participants.map(p => p.user_id);
+        
+        console.log('🔍 Fetching profiles for user IDs:', userIds);
+        
         const { data: profiles, error: profilesError } = await supabase
             .from('user_profiles')
-            .select('id, full_name, spouse_name, email')
+            .select('*')  // Get ALL columns to see what's there
             .in('id', userIds);
         
-        if (profilesError) throw profilesError;
+        console.log('🔍 Profiles query result:', { 
+            profiles, 
+            error: profilesError,
+            count: profiles?.length,
+            firstProfile: profiles?.[0]
+        });
+        
+        if (profilesError) {
+            console.error('❌ Error fetching profiles:', profilesError);
+            throw profilesError;
+        }
         
         // Combine participants with their profiles
         const participantsWithProfiles = participants.map(p => {
