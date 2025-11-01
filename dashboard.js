@@ -391,6 +391,29 @@ async function showGroupDetails(groupId) {
         
         content += '</ul>';
         
+        // Add delete group button for creator at the bottom
+        if (isCreator) {
+            content += `
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px dashed #ddd;">
+                    <button onclick="deleteGroup('${groupId}', '${group.group_code}')" class="btn" style="
+                        background: #7f1d1d;
+                        color: white;
+                        padding: 10px 20px;
+                        font-size: 14px;
+                        border: 2px solid #991b1b;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        width: 100%;
+                    ">
+                        🗑️ Delete This Group
+                    </button>
+                    <p style="margin: 10px 0 0 0; color: #999; font-size: 12px; text-align: center;">
+                        Warning: This will permanently delete the group and all its data
+                    </p>
+                </div>
+            `;
+        }
+        
         // Add draw/undo button for creator
         console.log('DEBUG - Button logic:', { isCreator, isDrawn: group.is_drawn, participantCount: participantsWithProfiles.length });
         
@@ -452,6 +475,76 @@ async function showGroupDetails(groupId) {
     } catch (error) {
         console.error('Error showing group details:', error);
         alert('Error loading group details: ' + error.message);
+    }
+}
+
+// Delete Entire Group
+async function deleteGroup(groupId, groupCode) {
+    const confirmMsg = `⚠️ DELETE GROUP: ${groupCode}?\n\nThis will PERMANENTLY delete:\n• The group\n• All participants\n• All assignments\n• All invites\n• Everything!\n\nThis CANNOT be undone!\n\nType "${groupCode}" below to confirm:`;
+    
+    const userInput = prompt(confirmMsg);
+    
+    if (userInput !== groupCode) {
+        if (userInput !== null) {
+            alert('Group code did not match. Deletion cancelled.');
+        }
+        return;
+    }
+    
+    try {
+        console.log('🗑️ Deleting group:', groupId);
+        
+        // Delete in order: assignments -> invites -> participants -> group
+        
+        // 1. Delete assignments
+        const { error: assignmentsError } = await supabase
+            .from('assignments')
+            .delete()
+            .eq('group_id', groupId);
+        
+        if (assignmentsError) {
+            console.error('Error deleting assignments:', assignmentsError);
+            // Continue anyway
+        }
+        
+        // 2. Delete invites
+        const { error: invitesError } = await supabase
+            .from('group_invites')
+            .delete()
+            .eq('group_id', groupId);
+        
+        if (invitesError) {
+            console.error('Error deleting invites:', invitesError);
+            // Continue anyway
+        }
+        
+        // 3. Delete participants
+        const { error: participantsError } = await supabase
+            .from('participants')
+            .delete()
+            .eq('group_id', groupId);
+        
+        if (participantsError) throw participantsError;
+        
+        // 4. Delete group
+        const { error: groupError } = await supabase
+            .from('groups')
+            .delete()
+            .eq('id', groupId);
+        
+        if (groupError) throw groupError;
+        
+        console.log('✅ Group deleted successfully');
+        
+        alert(`✅ Group "${groupCode}" has been permanently deleted.`);
+        
+        // Close modal and reload dashboard
+        closeAllModals();
+        await loadGroups();
+        
+    } catch (error) {
+        console.error('❌ Error deleting group:', error);
+        alert(`Error deleting group: ${error.message}\n\nSome data may have been deleted. Please refresh the page.`);
     }
 }
 
