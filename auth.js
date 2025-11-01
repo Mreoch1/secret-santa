@@ -112,6 +112,9 @@ async function handleSignUp(e) {
         
         if (authError) throw authError;
         
+        // Wait a moment for auth session to fully establish
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         // Create user profile
         const { error: profileError } = await supabase
             .from('user_profiles')
@@ -122,7 +125,12 @@ async function handleSignUp(e) {
                 music_consent: musicConsent
             }]);
         
-        if (profileError) throw profileError;
+        if (profileError) {
+            console.error('Profile creation error:', profileError);
+            // If profile creation fails, still let them continue
+            // They can add profile info later
+            console.log('Continuing without profile - user can update later');
+        }
         
         // Store music consent in localStorage
         if (musicConsent) {
