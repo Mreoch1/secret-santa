@@ -280,6 +280,14 @@ async function showGroupDetails(groupId) {
         const currentUserParticipant = participantsWithProfiles.find(p => p.user_id === currentUser.id);
         const isCreator = group.created_by === currentUserParticipant?.id;
         
+        console.log('DEBUG - Creator check:', {
+            groupCreatedBy: group.created_by,
+            currentUserId: currentUser.id,
+            currentUserParticipantId: currentUserParticipant?.id,
+            isCreator: isCreator,
+            isDrawn: group.is_drawn
+        });
+        
         // Get sent invites if user is creator
         let invites = [];
         if (isCreator) {
@@ -288,6 +296,8 @@ async function showGroupDetails(groupId) {
                 .select('*')
                 .eq('group_id', groupId)
                 .order('sent_at', { ascending: false });
+            
+            console.log('DEBUG - Invites:', { invitesData, invitesError });
             
             if (!invitesError && invitesData) {
                 invites = invitesData;
@@ -301,7 +311,7 @@ async function showGroupDetails(groupId) {
         const passwordDisplay = document.getElementById('groupPasswordDisplay');
         const inviteSection = document.getElementById('inviteSection');
         
-        console.log('Creator check:', { isCreator, hasPassword: !!group.group_password, password: group.group_password });
+        console.log('Creator check:', { isCreator, hasPassword: !!group.group_password, password: group.group_password, invitesCount: invites.length });
         
         if (isCreator) {
             if (group.group_password) {
@@ -316,6 +326,7 @@ async function showGroupDetails(groupId) {
                 sendInvitesBtn.onclick = () => openInviteModal(group);
                 
                 // Show invite tracking list
+                console.log('DEBUG - About to display invite list:', { invitesLength: invites.length });
                 displayInviteList(invites, participantsWithProfiles, group);
             } else {
                 // Show message that password should be set
@@ -352,7 +363,10 @@ async function showGroupDetails(groupId) {
         content += '</ul>';
         
         // Add draw/undo button for creator
+        console.log('DEBUG - Button logic:', { isCreator, isDrawn: group.is_drawn, participantCount: participantsWithProfiles.length });
+        
         if (isCreator && !group.is_drawn && participantsWithProfiles.length >= 2) {
+            console.log('DEBUG - Adding DRAW button');
             content += `
                 <div style="margin-top: 20px;">
                     <button onclick="drawNames('${groupId}')" class="btn btn-primary">
@@ -364,9 +378,10 @@ async function showGroupDetails(groupId) {
                 </div>
             `;
         } else if (isCreator && group.is_drawn) {
+            console.log('DEBUG - Adding UNDO button');
             content += `
-                <div style="margin-top: 20px;">
-                    <button onclick="undoDrawNames('${groupId}')" class="btn" style="background: var(--red); color: white;">
+                <div style="margin-top: 20px; background: #fee; padding: 15px; border-radius: 10px;">
+                    <button onclick="undoDrawNames('${groupId}')" class="btn" style="background: var(--red); color: white; width: 100%;">
                         ↺ Undo Draw & Redraw Names
                     </button>
                     <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
@@ -375,11 +390,14 @@ async function showGroupDetails(groupId) {
                 </div>
             `;
         } else if (isCreator && participantsWithProfiles.length < 2) {
+            console.log('DEBUG - Not enough participants');
             content += `
                 <p style="margin-top: 20px; color: #666;">
                     Need at least 2 participants to draw names
                 </p>
             `;
+        } else {
+            console.log('DEBUG - No button (not creator or other reason)');
         }
         
         document.getElementById('groupDetailsContent').innerHTML = content;
