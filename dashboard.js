@@ -460,26 +460,35 @@ async function removeParticipant(participantId, groupId, participantName) {
     }
     
     try {
-        console.log('Removing participant:', participantId);
+        console.log('🗑️ Removing participant:', participantId, 'from group:', groupId);
         
         // Delete the participant
-        const { error: deleteError } = await supabase
+        const { data, error: deleteError } = await supabase
             .from('participants')
             .delete()
             .eq('id', participantId);
         
-        if (deleteError) throw deleteError;
+        if (deleteError) {
+            console.error('❌ Delete error:', deleteError);
+            throw deleteError;
+        }
+        
+        console.log('✅ Participant deleted successfully');
         
         alert(`✅ ${participantName} has been removed from the group.`);
         
         // Refresh the dashboard and group details
         closeAllModals();
+        console.log('🔄 Reloading groups...');
         await loadGroups();
-        setTimeout(() => showGroupDetails(groupId), 300);
+        console.log('🔄 Reopening group details...');
+        setTimeout(() => {
+            showGroupDetails(groupId);
+        }, 500); // Increased delay to ensure refresh
         
     } catch (error) {
-        console.error('Error removing participant:', error);
-        alert('Error removing participant: ' + error.message);
+        console.error('❌ Error removing participant:', error);
+        alert(`Error removing participant: ${error.message}\n\nTry refreshing the page (F5) and removing again.`);
     }
 }
 
