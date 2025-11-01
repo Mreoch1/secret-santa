@@ -351,7 +351,7 @@ async function showGroupDetails(groupId) {
         
         content += '</ul>';
         
-        // Add draw button for creator if not drawn yet
+        // Add draw/undo button for creator
         if (isCreator && !group.is_drawn && participantsWithProfiles.length >= 2) {
             content += `
                 <div style="margin-top: 20px;">
@@ -360,6 +360,17 @@ async function showGroupDetails(groupId) {
                     </button>
                     <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
                         Make sure everyone has joined before drawing!
+                    </p>
+                </div>
+            `;
+        } else if (isCreator && group.is_drawn) {
+            content += `
+                <div style="margin-top: 20px;">
+                    <button onclick="undoDrawNames('${groupId}')" class="btn" style="background: var(--red); color: white;">
+                        ↺ Undo Draw & Redraw Names
+                    </button>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        This will clear all assignments so you can draw again
                     </p>
                 </div>
             `;
@@ -380,9 +391,45 @@ async function showGroupDetails(groupId) {
     }
 }
 
+// Undo Draw Names
+async function undoDrawNames(groupId) {
+    if (!confirm('Are you sure you want to undo the draw?\n\nThis will:\n• Delete all current assignments\n• Allow you to draw names again\n• Send new assignments when you redraw\n\nContinue?')) {
+        return;
+    }
+    
+    try {
+        // Delete all assignments for this group
+        const { error: deleteError } = await supabase
+            .from('assignments')
+            .delete()
+            .eq('group_id', groupId);
+        
+        if (deleteError) throw deleteError;
+        
+        // Mark group as not drawn
+        const { error: updateError } = await supabase
+            .from('groups')
+            .update({ is_drawn: false })
+            .eq('id', groupId);
+        
+        if (updateError) throw updateError;
+        
+        alert('✅ Draw has been reset! You can now draw names again.');
+        
+        // Refresh the dashboard and group details
+        closeAllModals();
+        await loadGroups();
+        setTimeout(() => showGroupDetails(groupId), 300);
+        
+    } catch (error) {
+        console.error('Error undoing draw:', error);
+        alert('Error undoing draw: ' + error.message);
+    }
+}
+
 // Draw Names
 async function drawNames(groupId) {
-    if (!confirm('Are you sure you want to draw names? This cannot be undone!')) {
+    if (!confirm('Are you sure you want to draw names?\n\nThis will:\n• Randomly assign Secret Santa pairs\n• Notify all participants\n\nContinue?')) {
         return;
     }
     
@@ -834,25 +881,23 @@ function createInviteEmailHtml(groupCode, groupPassword, personalMessage, sender
 
 // Display Invite List with Join Status
 function displayInviteList(invites, participants, group) {
-    const inviteSection = document.getElementById('inviteSection');
+    // Get the container where we'll insert the list
+    const container = document.getElementById('inviteListContainer');
     
-    // Remove existing invite list if any
-    const existingList = document.getElementById('inviteListContainer');
-    if (existingList) {
-        existingList.remove();
+    if (!container) {
+        console.error('inviteListContainer not found');
+        return;
     }
+    
+    // Clear any existing content
+    container.innerHTML = '';
     
     if (invites.length === 0) {
         return; // No invites sent yet
     }
     
-    // Get all participant emails by looking up user profiles
-    const participantUserIds = participants.map(p => p.user_id);
-    
-    // Create invite list container
-    const listContainer = document.createElement('div');
-    listContainer.id = 'inviteListContainer';
-    listContainer.style.cssText = 'margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;';
+    // Build the invite list HTML
+    container.style.cssText = 'margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;';
     
     let listHtml = '<h3 style="color: var(--gold); margin-top: 0;">📧 Sent Invitations</h3>';
     listHtml += '<div style="display: flex; flex-direction: column; gap: 10px;">';
@@ -893,10 +938,7 @@ function displayInviteList(invites, participants, group) {
     });
     
     listHtml += '</div>';
-    listContainer.innerHTML = listHtml;
-    
-    // Insert before the send invites button
-    inviteSection.parentNode.insertBefore(listContainer, inviteSection);
+    container.innerHTML = listHtml;
     
     // Add event listeners for resend buttons
     document.querySelectorAll('.btn-resend-invite').forEach(btn => {
