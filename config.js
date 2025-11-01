@@ -13,7 +13,7 @@ const SUPABASE_ANON_KEY = isDevelopment
 
 // Resend API Key - DO NOT COMMIT TO PUBLIC REPOS
 // Use Netlify environment variables in production
-const RESEND_API_KEY = 're_cfiPFoPP_DNJvMhYgMM28Edh6bxoMchdj';
+const RESEND_API_KEY = '';
 
 // Site URL
 const SITE_URL = isDevelopment

@@ -842,7 +842,7 @@ async function handleSendInvites() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        from: 'Secret Santa <onboarding@resend.dev>',
+                        from: 'Secret Santa <santa@holidaydrawnames.com>',
                         to: [email],
                         subject: `🎅 You're Invited to Secret Santa - ${group.group_code}`,
                         html: emailHtml
@@ -878,7 +878,7 @@ async function handleSendInvites() {
             let message = `✅ Success! Invitations sent to ${emailsSent} recipient(s)! 🎄\n\nCheck your inbox!`;
             
             if (emailsFailed > 0) {
-                message += `\n\n⚠️ Note: ${emailsFailed} email(s) couldn't be sent.\n\nResend's free tier only allows sending to YOUR email (mreoch82@hotmail.com) until you verify a domain.\n\nTo send to others: Visit resend.com/domains to verify a domain, or use the clipboard copy feature!`;
+                message += `\n\n⚠️ Note: ${emailsFailed} email(s) couldn't be sent.\n\nCheck the Resend dashboard for details or verify your domain is properly configured.`;
             }
             
             alert(message);

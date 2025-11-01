@@ -11,7 +11,10 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { from, to, subject, html } = JSON.parse(event.body);
+    let { from, to, subject, html } = JSON.parse(event.body);
+    
+    // Override from address to use custom domain
+    from = 'Secret Santa <santa@holidaydrawnames.com>';
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
     if (!RESEND_API_KEY) {

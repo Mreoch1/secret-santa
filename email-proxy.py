@@ -12,7 +12,7 @@ import json
 app = Flask(__name__)
 CORS(app)  # Enable CORS for local development
 
-RESEND_API_KEY = 're_cfiPFoPP_DNJvMhYgMM28Edh6bxoMchdj'
+RESEND_API_KEY = 'YOUR_RESEND_API_KEY_HERE'  # Set via environment variable in production
 RESEND_API_URL = 'https://api.resend.com/emails'
 
 @app.route('/send-email', methods=['POST'])

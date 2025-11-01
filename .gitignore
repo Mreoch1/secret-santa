@@ -1,6 +1,10 @@
 # Environment variables
 .env
 .env.local
+.env.production
+
+# API Keys and secrets (DO NOT COMMIT)
+config-local.js
 
 # Node modules (if any)
 node_modules/
