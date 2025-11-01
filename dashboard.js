@@ -589,24 +589,40 @@ async function editParticipant(userId, currentName, currentSpouse) {
     
     try {
         console.log('🔄 Updating participant:', userId);
-        console.log('New values:', { name: newName, spouse: newSpouse });
+        console.log('Current values:', { currentName, currentSpouse });
+        console.log('New values:', { newName, newSpouse });
+        console.log('Will save:', { 
+            full_name: newName.trim() || currentName,
+            spouse_name: newSpouse.trim() || null 
+        });
+        
+        const updateData = {
+            full_name: newName.trim() || currentName,
+            spouse_name: newSpouse.trim() || null,
+            updated_at: new Date().toISOString()
+        };
+        
+        console.log('Sending update to Supabase:', updateData);
         
         const { data, error } = await supabase
             .from('user_profiles')
-            .update({
-                full_name: newName.trim() || currentName,
-                spouse_name: newSpouse.trim() || null,
-                updated_at: new Date().toISOString()
-            })
+            .update(updateData)
             .eq('id', userId)
             .select();
         
+        console.log('Supabase response:', { data, error });
+        
         if (error) {
-            console.error('❌ Update error:', error);
+            console.error('❌ Update error details:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
             throw error;
         }
         
-        console.log('✅ Update successful:', data);
+        console.log('✅ Update successful! Returned data:', data);
         
         alert(`✅ Updated successfully!\n\nName: ${newName}\nSpouse: ${newSpouse || '(none)'}`);
         
