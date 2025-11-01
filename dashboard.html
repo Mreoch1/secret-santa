@@ -173,6 +173,25 @@
             </div>
         </div>
         
+        <!-- Blocklist Management Modal -->
+        <div id="blocklistModal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="modal-close">&times;</span>
+                <h2>🚫 Manage Blocklist</h2>
+                <p class="info-text">Select pairs who should NOT be matched together</p>
+                
+                <div id="blocklistContent" style="max-height: 400px; overflow-y: auto; margin-top: 20px;">
+                    <!-- Populated dynamically -->
+                </div>
+                
+                <div style="margin-top: 20px; text-align: right;">
+                    <button id="saveBlocklistBtn" class="btn btn-primary">
+                        💾 Save Blocklist
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <!-- Send Invites Modal -->
         <div id="sendInvitesModal" class="modal">
             <div class="modal-content">

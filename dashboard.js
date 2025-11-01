@@ -442,6 +442,21 @@ async function showGroupDetails(groupId) {
             `;
         }
         
+        // Add blocklist management button for creator before drawing
+        if (isCreator && !group.is_drawn && participantsWithProfiles.length >= 2) {
+            content += `
+                <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border: 2px solid #0284c7; border-radius: 10px;">
+                    <h4 style="margin: 0 0 10px 0; color: #0284c7;">🚫 Manage Blocklist</h4>
+                    <p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">
+                        Prevent certain people from being matched together (spouses, family, etc.)
+                    </p>
+                    <button onclick="manageBlocklist('${groupId}')" class="btn" style="background: #0284c7; color: white;">
+                        🚫 Set Block Rules
+                    </button>
+                </div>
+            `;
+        }
+        
         // Add draw/undo button for creator
         console.log('DEBUG - Button logic:', { isCreator, isDrawn: group.is_drawn, participantCount: participantsWithProfiles.length });
         
@@ -507,6 +522,162 @@ async function showGroupDetails(groupId) {
     } catch (error) {
         console.error('Error showing group details:', error);
         alert('Error loading group details: ' + error.message);
+    }
+}
+
+// Manage Blocklist
+async function manageBlocklist(groupId) {
+    try {
+        // Get all participants
+        const { data: participants, error: participantsError } = await supabase
+            .from('participants')
+            .select('id, user_id')
+            .eq('group_id', groupId);
+        
+        if (participantsError) throw participantsError;
+        
+        // Get profiles
+        const userIds = participants.map(p => p.user_id);
+        const { data: profiles } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .in('id', userIds);
+        
+        const participantsWithProfiles = participants.map(p => {
+            const profile = profiles?.find(prof => prof.id === p.user_id);
+            return {
+                ...p,
+                user_profiles: profile || { full_name: 'Unknown', spouse_name: null }
+            };
+        });
+        
+        // Get existing blocks
+        const { data: existingBlocks, error: blocksError } = await supabase
+            .from('participant_blocks')
+            .select('*')
+            .eq('group_id', groupId);
+        
+        if (blocksError) console.error('Error fetching blocks:', blocksError);
+        
+        // Build blocklist UI
+        let content = '';
+        
+        for (let i = 0; i < participantsWithProfiles.length; i++) {
+            const personA = participantsWithProfiles[i];
+            const nameA = personA.user_profiles?.full_name || 'Unknown';
+            
+            content += `<div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">`;
+            content += `<h4 style="margin: 0 0 10px 0; color: var(--red);">${nameA} cannot be matched with:</h4>`;
+            
+            for (let j = 0; j < participantsWithProfiles.length; j++) {
+                if (i === j) continue; // Skip self
+                
+                const personB = participantsWithProfiles[j];
+                const nameB = personB.user_profiles?.full_name || 'Unknown';
+                
+                // Check if block exists (in either direction)
+                const isBlocked = existingBlocks?.some(block => 
+                    (block.participant_a_id === personA.id && block.participant_b_id === personB.id) ||
+                    (block.participant_a_id === personB.id && block.participant_b_id === personA.id)
+                ) || false;
+                
+                content += `
+                    <label style="display: block; padding: 8px; cursor: pointer; border-radius: 5px; margin-bottom: 5px; background: white;">
+                        <input 
+                            type="checkbox" 
+                            class="block-checkbox" 
+                            data-person-a="${personA.id}"
+                            data-person-b="${personB.id}"
+                            ${isBlocked ? 'checked' : ''}
+                        >
+                        <span style="margin-left: 8px;">${nameB}</span>
+                    </label>
+                `;
+            }
+            
+            content += `</div>`;
+        }
+        
+        document.getElementById('blocklistContent').innerHTML = content;
+        
+        // Store current group ID for saving
+        document.getElementById('blocklistModal').dataset.groupId = groupId;
+        
+        // Show modal
+        closeAllModals();
+        document.getElementById('blocklistModal').style.display = 'block';
+        
+        // Setup save handler
+        document.getElementById('saveBlocklistBtn').onclick = () => saveBlocklist(groupId);
+        
+    } catch (error) {
+        console.error('Error managing blocklist:', error);
+        alert('Error loading blocklist: ' + error.message);
+    }
+}
+
+// Save Blocklist
+async function saveBlocklist(groupId) {
+    try {
+        const checkboxes = document.querySelectorAll('.block-checkbox');
+        const blocksToCreate = [];
+        const blocksToDelete = [];
+        
+        // Get existing blocks
+        const { data: existingBlocks } = await supabase
+            .from('participant_blocks')
+            .select('*')
+            .eq('group_id', groupId);
+        
+        checkboxes.forEach(checkbox => {
+            const personAId = checkbox.dataset.personA;
+            const personBId = checkbox.dataset.personB;
+            
+            // Check if block exists
+            const existingBlock = existingBlocks?.find(block =>
+                (block.participant_a_id === personAId && block.participant_b_id === personBId) ||
+                (block.participant_a_id === personBId && block.participant_b_id === personAId)
+            );
+            
+            if (checkbox.checked && !existingBlock) {
+                // Need to create this block
+                blocksToCreate.push({
+                    group_id: groupId,
+                    participant_a_id: personAId,
+                    participant_b_id: personBId
+                });
+            } else if (!checkbox.checked && existingBlock) {
+                // Need to delete this block
+                blocksToDelete.push(existingBlock.id);
+            }
+        });
+        
+        // Delete unchecked blocks
+        if (blocksToDelete.length > 0) {
+            const { error: deleteError } = await supabase
+                .from('participant_blocks')
+                .delete()
+                .in('id', blocksToDelete);
+            
+            if (deleteError) throw deleteError;
+        }
+        
+        // Create new blocks
+        if (blocksToCreate.length > 0) {
+            const { error: insertError } = await supabase
+                .from('participant_blocks')
+                .insert(blocksToCreate);
+            
+            if (insertError) throw insertError;
+        }
+        
+        alert(`✅ Blocklist saved!\n\n${blocksToCreate.length} blocks added\n${blocksToDelete.length} blocks removed`);
+        
+        closeAllModals();
+        
+    } catch (error) {
+        console.error('Error saving blocklist:', error);
+        alert('Error saving blocklist: ' + error.message);
     }
 }
 
@@ -745,6 +916,17 @@ async function drawNames(groupId) {
             .eq('group_id', groupId);
         
         if (participantsError) throw participantsError;
+        
+        // Get blocklist for this group
+        const { data: blocks, error: blocksError } = await supabase
+            .from('participant_blocks')
+            .select('*')
+            .eq('group_id', groupId);
+        
+        if (blocksError) console.error('Error fetching blocks:', blocksError);
+        
+        // Store blocks globally for matching algorithm to use
+        window.currentBlocks = blocks || [];
         
         // Get user profiles for participants (need email for notifications)
         const userIds = participants.map(p => p.user_id);
@@ -1012,9 +1194,18 @@ function performSecretSantaMatching(participants, groupId) {
                 // Can't give to self
                 if (receiver.id === giver.id) return false;
                 
-                // Can't give to spouse (check both directions)
+                // Can't give to spouse (check both directions by name)
                 if (giverProfile.spouse_name && receiverProfile.full_name === giverProfile.spouse_name) return false;
                 if (receiverProfile.spouse_name && giverProfile.full_name === receiverProfile.spouse_name) return false;
+                
+                // Can't give to blocked participants (check blocklist)
+                if (window.currentBlocks) {
+                    const isBlocked = window.currentBlocks.some(block =>
+                        (block.participant_a_id === giver.id && block.participant_b_id === receiver.id) ||
+                        (block.participant_a_id === receiver.id && block.participant_b_id === giver.id)
+                    );
+                    if (isBlocked) return false;
+                }
                 
                 return true;
             });
