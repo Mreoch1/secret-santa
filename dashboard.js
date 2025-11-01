@@ -366,24 +366,39 @@ async function showGroupDetails(groupId) {
             const displayName = profile ? (profile.full_name || profile.email || 'Unknown User') : 'Unknown User';
             const nameStyle = !profile?.full_name ? 'font-style: italic; color: #666;' : '';
             const isCurrentUser = p.user_id === currentUser.id;
+            const spouseDisplay = profile?.spouse_name ? ` (married to <strong>${profile.spouse_name}</strong>)` : isCreator ? ' <span style="color: #999;">(no spouse set)</span>' : '';
             
             content += `
                 <li style="padding: 10px; background: #f8f9fa; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <span style="${nameStyle}">${displayName}</span>
-                        ${profile?.spouse_name ? ` (married to ${profile.spouse_name})` : ''}
-                        ${!profile?.full_name && profile?.email ? '<small style="color: #999;"> (profile incomplete)</small>' : ''}
-                        ${!profile ? '<small style="color: #f00;"> (⚠️ profile missing - data error)</small>' : ''}
-                        ${isCurrentUser ? ' <span style="color: var(--gold);">(you)</span>' : ''}
+                    <div style="flex: 1;">
+                        <div>
+                            <span style="${nameStyle}">${displayName}</span>
+                            ${spouseDisplay}
+                            ${!profile?.full_name && profile?.email ? '<small style="color: #999;"> (profile incomplete)</small>' : ''}
+                            ${!profile ? '<small style="color: #f00;"> (⚠️ profile missing - data error)</small>' : ''}
+                            ${isCurrentUser ? ' <span style="color: var(--gold);">(you)</span>' : ''}
+                        </div>
+                        ${isCreator ? `<small style="color: #666; font-size: 11px;">Email: ${profile?.email || 'unknown'}</small>` : ''}
                     </div>
-                    ${isCreator && !isCurrentUser && !group.is_drawn ? `
-                        <button 
-                            onclick="removeParticipant('${p.id}', '${groupId}', '${displayName}')" 
-                            style="background: #dc2626; color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;"
-                            title="Remove from group"
-                        >
-                            🗑️ Remove
-                        </button>
+                    ${isCreator && !group.is_drawn ? `
+                        <div style="display: flex; gap: 5px;">
+                            <button 
+                                onclick="editParticipant('${p.user_id}', '${displayName}', '${profile?.spouse_name || ''}')" 
+                                style="background: var(--gold); color: #333; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;"
+                                title="Edit name and spouse"
+                            >
+                                ✏️ Edit
+                            </button>
+                            ${!isCurrentUser ? `
+                                <button 
+                                    onclick="removeParticipant('${p.id}', '${groupId}', '${displayName}')" 
+                                    style="background: #dc2626; color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;"
+                                    title="Remove from group"
+                                >
+                                    🗑️ Remove
+                                </button>
+                            ` : ''}
+                        </div>
                     ` : ''}
                 </li>
             `;
@@ -470,7 +485,11 @@ async function showGroupDetails(groupId) {
         }
         
         document.getElementById('groupDetailsContent').innerHTML = content;
-        document.getElementById('groupDetailsModal').style.display = 'block';
+        
+        // Store current group ID for later reference
+        const modal = document.getElementById('groupDetailsModal');
+        modal.dataset.currentGroupId = groupId;
+        modal.style.display = 'block';
         
     } catch (error) {
         console.error('Error showing group details:', error);
@@ -545,6 +564,57 @@ async function deleteGroup(groupId, groupCode) {
     } catch (error) {
         console.error('❌ Error deleting group:', error);
         alert(`Error deleting group: ${error.message}\n\nSome data may have been deleted. Please refresh the page.`);
+    }
+}
+
+// Edit Participant Name and Spouse
+async function editParticipant(userId, currentName, currentSpouse) {
+    const newName = prompt(
+        `Edit Participant Information\n\n` +
+        `Current Name: ${currentName}\n\n` +
+        `Enter new name (or press Enter to keep current):`,
+        currentName
+    );
+    
+    if (newName === null) return; // Cancelled
+    
+    const newSpouse = prompt(
+        `Edit Spouse Name\n\n` +
+        `Current Spouse: ${currentSpouse || '(none)'}\n\n` +
+        `Enter spouse name (or leave empty for none):`,
+        currentSpouse || ''
+    );
+    
+    if (newSpouse === null) return; // Cancelled
+    
+    try {
+        console.log('Updating participant:', userId);
+        
+        const { error } = await supabase
+            .from('user_profiles')
+            .update({
+                full_name: newName.trim() || currentName,
+                spouse_name: newSpouse.trim() || null,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', userId);
+        
+        if (error) throw error;
+        
+        alert(`✅ Updated successfully!\n\nName: ${newName}\nSpouse: ${newSpouse || '(none)'}`);
+        
+        // Reload the group details
+        const groupId = document.getElementById('groupDetailsModal').dataset.currentGroupId;
+        if (groupId) {
+            setTimeout(() => showGroupDetails(groupId), 300);
+        } else {
+            // Fallback: reload groups
+            await loadGroups();
+        }
+        
+    } catch (error) {
+        console.error('Error updating participant:', error);
+        alert('Error updating participant: ' + error.message);
     }
 }
 
