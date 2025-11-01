@@ -380,14 +380,28 @@ async function showGroupDetails(groupId) {
         } else if (isCreator && group.is_drawn) {
             console.log('DEBUG - Adding UNDO button');
             content += `
-                <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%); border: 2px solid var(--red); border-radius: 12px; box-shadow: 0 2px 8px rgba(196, 30, 58, 0.2);">
-                    <h4 style="margin: 0 0 10px 0; color: var(--red); font-size: 16px;">
+                <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%); border: 2px solid var(--red); border-radius: 12px; box-shadow: 0 2px 8px rgba(196, 30, 58, 0.2);">
+                    <h4 style="margin: 0 0 10px 0; color: var(--red); font-size: 18px; font-weight: 700;">
                         ⚠️ Reset Draw
                     </h4>
-                    <p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">
-                        Need to redraw? Click below to clear all assignments.
+                    <p style="margin: 0 0 15px 0; color: #333; font-size: 14px; line-height: 1.5;">
+                        Need to redraw names? This will clear all current assignments so you can draw again.
                     </p>
-                    <button onclick="undoDrawNames('${groupId}')" class="btn" style="background: var(--red); color: white; padding: 10px 20px; font-size: 15px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s;">
+                    <button onclick="undoDrawNames('${groupId}')" class="btn" style="
+                        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+                        color: white;
+                        padding: 14px 28px;
+                        font-size: 16px;
+                        font-weight: 700;
+                        border: 2px solid #7f1d1d;
+                        border-radius: 10px;
+                        cursor: pointer;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+                        transition: all 0.2s;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        display: inline-block;
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2)'">
                         ↺ Undo & Redraw Names
                     </button>
                 </div>
