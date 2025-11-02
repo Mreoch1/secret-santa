@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast Testing Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="toast.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background: #c41e3a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #a01729;
+        }
+    </style>
+    <script src="toast.js"></script>
+</head>
+<body>
+    <h1>🎨 Toast Notification Testing</h1>
+    <p>Click the buttons below to test different toast types:</p>
+    
+    <div class="test-section">
+        <h2>Basic Toasts</h2>
+        <button class="test-button" onclick="Toast.success('Success! Everything worked perfectly! 🎉')">
+            ✅ Success Toast
+        </button>
+        <button class="test-button" onclick="Toast.error('Error! Something went wrong! ❌')">
+            ❌ Error Toast
+        </button>
+        <button class="test-button" onclick="Toast.warning('Warning! Please check this! ⚠️')">
+            ⚠️ Warning Toast
+        </button>
+        <button class="test-button" onclick="Toast.info('Info: This is informational! ℹ️')">
+            ℹ️ Info Toast
+        </button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Interactive Toasts</h2>
+        <button class="test-button" onclick="testConfirm()">
+            ❓ Test Confirm Dialog
+        </button>
+        <button class="test-button" onclick="testPrompt()">
+            ✏️ Test Prompt Dialog
+        </button>
+        <button class="test-button" onclick="testLoading()">
+            ⏳ Test Loading Toast
+        </button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Duration Tests</h2>
+        <button class="test-button" onclick="Toast.success('Quick toast! (2 seconds)', 2000)">
+            Quick (2s)
+        </button>
+        <button class="test-button" onclick="Toast.info('Normal toast (4 seconds)', 4000)">
+            Normal (4s)
+        </button>
+        <button class="test-button" onclick="Toast.warning('Long toast! (10 seconds)', 10000)">
+            Long (10s)
+        </button>
+        <button class="test-button" onclick="Toast.info('Permanent (click X to close)', 0)">
+            Permanent
+        </button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Multiple Toasts</h2>
+        <button class="test-button" onclick="testMultiple()">
+            🎭 Show Multiple Toasts
+        </button>
+    </div>
+    
+    <script>
+        async function testConfirm() {
+            const result = await Toast.confirm(
+                'Do you want to continue with this action?',
+                'Confirm Action'
+            );
+            
+            if (result) {
+                Toast.success('You clicked Confirm! ✅');
+            } else {
+                Toast.info('You clicked Cancel 🚫');
+            }
+        }
+        
+        async function testPrompt() {
+            const name = await Toast.prompt(
+                'What is your name?',
+                'John Doe',
+                'Enter Your Name'
+            );
+            
+            if (name) {
+                Toast.success(`Hello, ${name}! 👋`);
+            } else {
+                Toast.info('You cancelled the prompt');
+            }
+        }
+        
+        function testLoading() {
+            const loader = Toast.loading('Processing your request...');
+            
+            setTimeout(() => {
+                loader.update('Almost done...');
+            }, 1500);
+            
+            setTimeout(() => {
+                loader.close();
+                Toast.success('Processing complete! ✅');
+            }, 3000);
+        }
+        
+        function testMultiple() {
+            Toast.success('First toast! 1️⃣');
+            setTimeout(() => Toast.info('Second toast! 2️⃣'), 500);
+            setTimeout(() => Toast.warning('Third toast! 3️⃣'), 1000);
+            setTimeout(() => Toast.error('Fourth toast! 4️⃣'), 1500);
+        }
+    </script>
+</body>
+</html>
+

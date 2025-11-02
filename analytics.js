@@ -2,8 +2,8 @@
 // Replace G-XXXXXXXXXX with your actual GA4 Measurement ID
 
 (function() {
-    // GA4 Measurement ID - UPDATE THIS WITH YOUR ACTUAL ID
-    const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX'; // TODO: Replace with real ID
+    // GA4 Measurement ID - ACTIVE
+    const GA_MEASUREMENT_ID = 'G-YS64XMF8QX'; // Your Google Analytics ID
     
     // Only load analytics in production
     const isProduction = window.location.hostname === 'holidaydrawnames.com';
