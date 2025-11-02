@@ -956,13 +956,28 @@ async function undoDrawNames(groupId) {
     if (!confirmed) return;
     
     try {
+        const loader = Toast.loading('Clearing assignments...');
+        
+        // Get all assignments for this group first (for logging)
+        const { data: existingAssignments } = await supabase
+            .from('assignments')
+            .select('*')
+            .eq('group_id', groupId);
+        
+        console.log(`Found ${existingAssignments?.length || 0} assignments to delete`);
+        
         // Delete all assignments for this group
         const { error: deleteError } = await supabase
             .from('assignments')
             .delete()
             .eq('group_id', groupId);
         
-        if (deleteError) throw deleteError;
+        if (deleteError) {
+            loader.close();
+            throw deleteError;
+        }
+        
+        console.log('✅ All assignments deleted');
         
         // Mark group as not drawn
         const { error: updateError } = await supabase
@@ -970,8 +985,12 @@ async function undoDrawNames(groupId) {
             .update({ is_drawn: false })
             .eq('id', groupId);
         
-        if (updateError) throw updateError;
+        if (updateError) {
+            loader.close();
+            throw updateError;
+        }
         
+        loader.close();
         Toast.success('Draw has been reset! You can now draw names again.');
         
         // Refresh the dashboard and group details
