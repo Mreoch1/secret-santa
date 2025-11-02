@@ -78,7 +78,8 @@ async function handleSignIn(e) {
         
     } catch (error) {
         console.error('Sign in error:', error);
-        alert('Error signing in: ' + error.message);
+        Toast.error('Error signing in: ' + error.message);
+        Analytics.error('Sign in failed: ' + error.message, 'auth');
     }
 }
 
@@ -93,7 +94,7 @@ async function handleSignUp(e) {
     const cookieConsent = document.getElementById('cookieConsent').checked;
     
     if (!cookieConsent) {
-        alert('Please accept cookies to continue');
+        Toast.warning('Please accept cookies to continue');
         return;
     }
     
@@ -140,7 +141,8 @@ async function handleSignUp(e) {
         // Store cookie consent
         localStorage.setItem('cookieConsent', 'true');
         
-        alert('Account created! Please check your email to verify your account.');
+        Toast.success('Account created! Please check your email to verify your account.');
+        Analytics.signUp();
         
         // If email confirmation is disabled, redirect to dashboard
         if (authData.session) {
@@ -151,7 +153,8 @@ async function handleSignUp(e) {
         
     } catch (error) {
         console.error('Sign up error:', error);
-        alert('Error creating account: ' + error.message);
+        Toast.error('Error creating account: ' + error.message);
+        Analytics.error('Sign up failed: ' + error.message, 'auth');
     }
 }
 
@@ -168,12 +171,13 @@ async function handleForgotPassword(e) {
         
         if (error) throw error;
         
-        alert('Password reset email sent! Please check your inbox.');
+        Toast.success('Password reset email sent! Please check your inbox.');
         showPage('signInPage');
         
     } catch (error) {
         console.error('Password reset error:', error);
-        alert('Error sending reset email: ' + error.message);
+        Toast.error('Error sending reset email: ' + error.message);
+        Analytics.error('Password reset failed: ' + error.message, 'auth');
     }
 }
 

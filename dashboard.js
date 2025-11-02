@@ -149,7 +149,7 @@ async function loadGroups() {
         
     } catch (error) {
         console.error('Error loading groups:', error);
-        alert('Error loading groups: ' + error.message);
+        Toast.error('Error loading groups: ' + error.message);
     }
 }
 
@@ -546,7 +546,7 @@ async function showGroupDetails(groupId) {
         
     } catch (error) {
         console.error('Error showing group details:', error);
-        alert('Error loading group details: ' + error.message);
+        Toast.error('Error loading group details: ' + error.message);
     }
 }
 
@@ -637,7 +637,7 @@ async function manageBlocklist(groupId) {
         
     } catch (error) {
         console.error('Error managing blocklist:', error);
-        alert('Error loading blocklist: ' + error.message);
+        Toast.error('Error loading blocklist: ' + error.message);
     }
 }
 
@@ -696,25 +696,25 @@ async function saveBlocklist(groupId) {
             if (insertError) throw insertError;
         }
         
-        alert(`✅ Blocklist saved!\n\n${blocksToCreate.length} blocks added\n${blocksToDelete.length} blocks removed`);
+        Toast.success(`Blocklist saved!\n\n${blocksToCreate.length} blocks added\n${blocksToDelete.length} blocks removed`);
         
         closeAllModals();
         
     } catch (error) {
         console.error('Error saving blocklist:', error);
-        alert('Error saving blocklist: ' + error.message);
+        Toast.error('Error saving blocklist: ' + error.message);
     }
 }
 
 // Delete Entire Group
 async function deleteGroup(groupId, groupCode) {
-    const confirmMsg = `⚠️ DELETE GROUP: ${groupCode}?\n\nThis will PERMANENTLY delete:\n• The group\n• All participants\n• All assignments\n• All invites\n• Everything!\n\nThis CANNOT be undone!\n\nType "${groupCode}" below to confirm:`;
+    const confirmMsg = `This will PERMANENTLY delete:\n• The group\n• All participants\n• All assignments\n• All invites\n• Everything!\n\nThis CANNOT be undone!\n\nType "${groupCode}" below to confirm:`;
     
-    const userInput = prompt(confirmMsg);
+    const userInput = await Toast.prompt(confirmMsg, '', `⚠️ DELETE GROUP: ${groupCode}?`);
     
     if (userInput !== groupCode) {
         if (userInput !== null) {
-            alert('Group code did not match. Deletion cancelled.');
+            Toast.warning('Group code did not match. Deletion cancelled.');
         }
         return;
     }
@@ -764,7 +764,7 @@ async function deleteGroup(groupId, groupCode) {
         
         console.log('✅ Group deleted successfully');
         
-        alert(`✅ Group "${groupCode}" has been permanently deleted.`);
+        Toast.success(`Group "${groupCode}" has been permanently deleted.`);
         
         // Close modal and reload dashboard
         closeAllModals();
@@ -772,17 +772,16 @@ async function deleteGroup(groupId, groupCode) {
         
     } catch (error) {
         console.error('❌ Error deleting group:', error);
-        alert(`Error deleting group: ${error.message}\n\nSome data may have been deleted. Please refresh the page.`);
+        Toast.error(`Error deleting group: ${error.message}\n\nSome data may have been deleted. Please refresh the page.`);
     }
 }
 
 // Edit Participant Name
 async function editParticipant(userId, currentName) {
-    const newName = prompt(
-        `Edit Participant Name\n\n` +
-        `Current Name: ${currentName}\n\n` +
-        `Enter new name:`,
-        currentName
+    const newName = await Toast.prompt(
+        `Current Name: ${currentName}\n\nEnter new name:`,
+        currentName,
+        'Edit Participant Name'
     );
     
     if (newName === null || newName.trim() === '') return; // Cancelled or empty
@@ -807,7 +806,7 @@ async function editParticipant(userId, currentName) {
         
         console.log('✅ Name updated successfully');
         
-        alert(`✅ Name updated to: ${newName}`);
+        Toast.success(`Name updated to: ${newName}`);
         
         // Reload the group details
         const groupId = document.getElementById('groupDetailsModal').dataset.currentGroupId;
@@ -821,15 +820,17 @@ async function editParticipant(userId, currentName) {
         
     } catch (error) {
         console.error('❌ Error updating participant:', error);
-        alert(`Error updating participant: ${error.message}`);
+        Toast.error(`Error updating participant: ${error.message}`);
     }
 }
 
 // Remove Participant from Group
 async function removeParticipant(participantId, groupId, participantName) {
-    if (!confirm(`Are you sure you want to remove "${participantName}" from this group?\n\nThey will need to rejoin if you want them back.`)) {
-        return;
-    }
+    const confirmed = await Toast.confirm(
+        `They will need to rejoin if you want them back.`,
+        `Remove "${participantName}"?`
+    );
+    if (!confirmed) return;
     
     try {
         console.log('🗑️ Removing participant:', participantId, 'from group:', groupId);
@@ -847,7 +848,7 @@ async function removeParticipant(participantId, groupId, participantName) {
         
         console.log('✅ Participant deleted successfully');
         
-        alert(`✅ ${participantName} has been removed from the group.`);
+        Toast.success(`${participantName} has been removed from the group.`);
         
         // Refresh the dashboard and group details
         closeAllModals();
@@ -860,15 +861,17 @@ async function removeParticipant(participantId, groupId, participantName) {
         
     } catch (error) {
         console.error('❌ Error removing participant:', error);
-        alert(`Error removing participant: ${error.message}\n\nTry refreshing the page (F5) and removing again.`);
+        Toast.error(`Error removing participant: ${error.message}\n\nTry refreshing the page (F5) and removing again.`);
     }
 }
 
 // Undo Draw Names
 async function undoDrawNames(groupId) {
-    if (!confirm('Are you sure you want to undo the draw?\n\nThis will:\n• Delete all current assignments\n• Allow you to draw names again\n• Send new assignments when you redraw\n\nContinue?')) {
-        return;
-    }
+    const confirmed = await Toast.confirm(
+        'This will:\n• Delete all current assignments\n• Allow you to draw names again\n• Send new assignments when you redraw',
+        'Undo Draw?'
+    );
+    if (!confirmed) return;
     
     try {
         // Delete all assignments for this group
@@ -887,7 +890,7 @@ async function undoDrawNames(groupId) {
         
         if (updateError) throw updateError;
         
-        alert('✅ Draw has been reset! You can now draw names again.');
+        Toast.success('Draw has been reset! You can now draw names again.');
         
         // Refresh the dashboard and group details
         closeAllModals();
@@ -896,15 +899,17 @@ async function undoDrawNames(groupId) {
         
     } catch (error) {
         console.error('Error undoing draw:', error);
-        alert('Error undoing draw: ' + error.message);
+        Toast.error('Error undoing draw: ' + error.message);
     }
 }
 
 // Draw Names
 async function drawNames(groupId) {
-    if (!confirm('Are you sure you want to draw names?\n\nThis will:\n• Randomly assign Secret Santa pairs\n• Notify all participants\n\nContinue?')) {
-        return;
-    }
+    const confirmed = await Toast.confirm(
+        'This will:\n• Randomly assign Secret Santa pairs\n• Notify all participants',
+        'Draw Names?'
+    );
+    if (!confirmed) return;
     
     try {
         // Get all participants
@@ -946,7 +951,7 @@ async function drawNames(groupId) {
         });
         
         if (participantsWithProfiles.length < 2) {
-            alert('Need at least 2 participants to draw names');
+            Toast.warning('Need at least 2 participants to draw names');
             return;
         }
         
@@ -954,7 +959,7 @@ async function drawNames(groupId) {
         const assignments = performSecretSantaMatching(participantsWithProfiles, groupId);
         
         if (!assignments) {
-            alert('Unable to create valid assignments with the given constraints. Please check spouse pairings.');
+            Toast.error('Unable to create valid assignments with the given constraints. Please check spouse pairings.');
             return;
         }
         
@@ -988,7 +993,8 @@ async function drawNames(groupId) {
             await sendCreatorReceipt(assignments, participantsWithProfiles, group);
         }
         
-        alert('🎉 Names drawn successfully!\n\nAll participants have been emailed their Secret Santa assignments!\n\nYou will also receive a master list via email for safekeeping.');
+        Toast.success('🎉 Names drawn successfully!\n\nAll participants have been emailed their Secret Santa assignments!\n\nYou will also receive a master list via email for safekeeping.', 8000);
+        Analytics.drawNames(participantsWithProfiles.length);
         
         // Close modal and reload groups
         document.getElementById('groupDetailsModal').style.display = 'none';
@@ -996,7 +1002,8 @@ async function drawNames(groupId) {
         
     } catch (error) {
         console.error('Error drawing names:', error);
-        alert('Error drawing names: ' + error.message);
+        Toast.error('Error drawing names: ' + error.message);
+        Analytics.error('Draw names failed: ' + error.message, 'draw');
     }
 }
 
@@ -1470,7 +1477,7 @@ async function joinGroup(groupCode, groupPassword) {
             .single();
         
         if (groupError && groupError.code === 'PGRST116') {
-            alert('Group not found! Please check the group code or create a new group.');
+            Toast.error('Group not found! Please check the group code or create a new group.');
             return;
         } else if (groupError) {
             throw groupError;
@@ -1478,7 +1485,7 @@ async function joinGroup(groupCode, groupPassword) {
         
         // Verify password
         if (group.group_password !== groupPassword) {
-            alert('Incorrect password! Please check with your group organizer.');
+            Toast.error('Incorrect password! Please check with your group organizer.');
             return;
         }
         
@@ -1491,7 +1498,7 @@ async function joinGroup(groupCode, groupPassword) {
             .single();
         
         if (existing) {
-            alert('You\'re already in this group!');
+            Toast.info('You\'re already in this group!');
             return;
         }
         
@@ -1507,13 +1514,14 @@ async function joinGroup(groupCode, groupPassword) {
         
         if (participantError) throw participantError;
         
-        alert(`Successfully joined ${groupCode}! 🎄`);
+        Toast.success(`Successfully joined ${groupCode}! 🎄`);
+        Analytics.joinGroup();
         closeAllModals();
         await loadGroups();
         
     } catch (error) {
         console.error('Error joining group:', error);
-        alert('Error joining group: ' + error.message);
+        Toast.error('Error joining group: ' + error.message);
     }
 }
 
@@ -1530,7 +1538,7 @@ async function createGroup(groupCode, groupPassword) {
             .single();
         
         if (existing) {
-            alert('This group code is already taken! Please choose a different one.');
+            Toast.warning('This group code is already taken! Please choose a different one.');
             return;
         }
         
@@ -1565,13 +1573,14 @@ async function createGroup(groupCode, groupPassword) {
             .update({ created_by: participant.id })
             .eq('id', newGroup.id);
         
-        alert(`Group "${groupCode}" created successfully! 🎅\n\nShare this info with your group:\nCode: ${groupCode}\nPassword: ${groupPassword}`);
+        Toast.success(`Group "${groupCode}" created successfully! 🎅\n\nCode: ${groupCode}\nPassword: ${groupPassword}`, 8000);
+        Analytics.createGroup(groupCode);
         closeAllModals();
         await loadGroups();
         
     } catch (error) {
         console.error('Error creating group:', error);
-        alert('Error creating group: ' + error.message);
+        Toast.error('Error creating group: ' + error.message);
     }
 }
 
@@ -1618,7 +1627,7 @@ function setupEventListeners() {
         const confirmPassword = document.getElementById('confirmGroupPassword').value;
         
         if (password !== confirmPassword) {
-            alert('Passwords do not match! Please try again.');
+            Toast.error('Passwords do not match! Please try again.');
             return;
         }
         
@@ -1859,7 +1868,7 @@ function displayInviteList(invites, participants, group) {
                 const email = btn.dataset.email;
                 const groupId = btn.dataset.groupId;
                 
-                if (confirm(`Resend invitation to ${email}?`)) {
+                if (await Toast.confirm(`Resend invitation to ${email}?`, 'Resend Invite?')) {
                     await resendSingleInvite(email, group);
                 }
             });
@@ -1900,7 +1909,7 @@ async function resendSingleInvite(email, group) {
         const result = await response.json();
         
         if (response.ok && result.success) {
-            alert(`✅ Reminder sent to ${email}!`);
+            Toast.success(`Reminder sent to ${email}!`);
             
             // Update timestamp in database
             await supabase
@@ -1912,11 +1921,11 @@ async function resendSingleInvite(email, group) {
             // Refresh group details
             setTimeout(() => showGroupDetails(group.id), 300);
         } else {
-            alert(`❌ Failed to send reminder to ${email}. Please try again.`);
+            Toast.error(`Failed to send reminder to ${email}. Please try again.`);
         }
     } catch (error) {
         console.error('Error resending invite:', error);
-        alert('Error sending reminder. Please try again.');
+        Toast.error('Error sending reminder. Please try again.');
     }
 }
 
@@ -1944,7 +1953,7 @@ async function handleSendInvites() {
     const group = window.currentInviteGroup;
     
     if (!group) {
-        alert('Error: Group information not found');
+        Toast.error('Error: Group information not found');
         return;
     }
     
@@ -1955,7 +1964,7 @@ async function handleSendInvites() {
         .filter(e => e.length > 0 && e.includes('@'));
     
     if (emails.length === 0) {
-        alert('Please enter at least one valid email address');
+        Toast.warning('Please enter at least one valid email address');
         return;
     }
     
@@ -2050,7 +2059,7 @@ async function handleSendInvites() {
                 message += `\n\n⚠️ Note: ${emailsFailed} email(s) couldn't be sent.\n\nCheck the Resend dashboard for details or verify your domain is properly configured.`;
             }
             
-            alert(message);
+            Toast.success(message, 8000);
         } else {
             // All failed - create copyable text as fallback
             let inviteText = `🎄 SECRET SANTA INVITATION 🎅\n\n`;
@@ -2077,9 +2086,9 @@ async function handleSendInvites() {
             // Copy to clipboard
             try {
                 await navigator.clipboard.writeText(inviteText);
-                alert(`⚠️ Email API unavailable (likely CORS restriction).\n\n✅ Invitation text copied to clipboard!\n\nPaste and send to:\n${emails.join('\n')}\n\nvia your email, text, or messaging app.`);
+                Toast.warning(`Email API unavailable (likely CORS restriction).\n\n✅ Invitation text copied to clipboard!\n\nPaste and send to:\n${emails.join('\n')}\n\nvia your email, text, or messaging app.`, 10000);
             } catch (clipError) {
-                alert(`⚠️ Email API unavailable.\n\nCopy this invitation and send manually:\n\n${inviteText}\n\nTo: ${emails.join(', ')}`);
+                Toast.warning(`Email API unavailable.\n\nCopy this invitation and send manually:\n\n${inviteText}\n\nTo: ${emails.join(', ')}`, 10000);
             }
         }
         
@@ -2103,7 +2112,7 @@ async function handleSendInvites() {
         errorMsg += '3. Try again in a moment\n\n';
         errorMsg += 'Or share the group code and password manually.';
         
-        alert(errorMsg);
+        Toast.error(errorMsg, 8000);
     }
 }
 
@@ -2198,7 +2207,7 @@ function initMusic() {
                 musicToggle.classList.add('playing');
                 musicStarted = true;
             } catch (error) {
-                alert('Unable to play music');
+                Toast.info('Unable to play music. Try clicking the button again.');
             }
         } else {
             bgMusic.pause();

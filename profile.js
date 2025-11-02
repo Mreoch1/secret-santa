@@ -48,7 +48,7 @@ async function loadProfile() {
         
     } catch (error) {
         console.error('Error loading profile:', error);
-        alert('Error loading profile. Please refresh the page.');
+        Toast.error('Error loading profile. Please refresh the page.');
     }
 }
 
@@ -81,7 +81,7 @@ async function handleProfileUpdate(e) {
     const fullName = document.getElementById('fullName').value.trim();
     
     if (!fullName) {
-        alert('Please enter your full name');
+        Toast.warning('Please enter your full name');
         return;
     }
     
@@ -96,7 +96,7 @@ async function handleProfileUpdate(e) {
         
         if (error) throw error;
         
-        alert('✅ Profile updated successfully!');
+        Toast.success('Profile updated successfully!');
         
         // Optionally redirect back to dashboard
         setTimeout(() => {
@@ -105,25 +105,26 @@ async function handleProfileUpdate(e) {
         
     } catch (error) {
         console.error('Error updating profile:', error);
-        alert('Error updating profile: ' + error.message);
+        Toast.error('Error updating profile: ' + error.message);
     }
 }
 
 // Handle Delete Account
 async function handleDeleteAccount() {
-    const confirmation = prompt(
-        '⚠️ DELETE YOUR ACCOUNT?\n\n' +
+    const confirmation = await Toast.prompt(
         'This will PERMANENTLY:\n' +
         '• Delete your account\n' +
         '• Remove you from ALL groups\n' +
         '• Delete all your data\n\n' +
         'This CANNOT be undone!\n\n' +
-        'Type "DELETE" to confirm:'
+        'Type "DELETE" to confirm:',
+        '',
+        '⚠️ DELETE YOUR ACCOUNT?'
     );
     
     if (confirmation !== 'DELETE') {
         if (confirmation !== null) {
-            alert('Account deletion cancelled.');
+            Toast.info('Account deletion cancelled.');
         }
         return;
     }
@@ -154,21 +155,21 @@ async function handleDeleteAccount() {
         
         if (authError) {
             console.error('Error deleting auth user:', authError);
-            alert('Error deleting account: ' + authError.message);
+            Toast.error('Error deleting account: ' + authError.message);
             return;
         }
         
         // 4. Sign out
         await supabase.auth.signOut();
         
-        alert('✅ Your account has been deleted.');
+        Toast.success('Your account has been deleted.');
         
         // Redirect to home
         window.location.href = 'index.html';
         
     } catch (error) {
         console.error('Error deleting account:', error);
-        alert('Error deleting account: ' + error.message);
+        Toast.error('Error deleting account: ' + error.message);
     }
 }
 
