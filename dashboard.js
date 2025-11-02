@@ -3,6 +3,86 @@ let supabase;
 let currentUser = null;
 let userProfile = null;
 
+// ========================================
+// PHASE 3: HELPER FUNCTIONS
+// ========================================
+
+// Get initials from name for avatar chips
+function getInitials(name) {
+    if (!name) return "?";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) {
+        return parts[0].slice(0, 2).toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+// Render avatar chips for member lists
+function renderAvatarChips(participants) {
+    if (!participants || participants.length === 0) return "";
+    
+    // Show up to first 3 people as chips, then a +N chip if more
+    const visible = participants.slice(0, 3);
+    const remaining = participants.length - visible.length;
+    
+    const chipsHtml = visible.map(p => {
+        const initials = getInitials(p.full_name || p.name || "?");
+        const safeName = (p.full_name || p.name || "").replace(/"/g, '&quot;');
+        return `
+            <div class="avatar-chip" title="${safeName}">${initials}</div>
+        `;
+    }).join("");
+    
+    const moreHtml = remaining > 0
+        ? `<div class="avatar-chip more">+${remaining}</div>`
+        : "";
+    
+    return `
+        <div class="member-avatars">
+            ${chipsHtml}${moreHtml}
+        </div>
+    `;
+}
+
+// Format exchange date for display
+function formatExchangeDate(rawDate) {
+    if (!rawDate) return null;
+    const d = new Date(rawDate);
+    const opts = { month: "short", day: "numeric", year: "numeric" };
+    return d.toLocaleDateString(undefined, opts);
+}
+
+// Render budget/date/location pills for group cards
+function renderGroupExtras(group) {
+    const pills = [];
+    
+    // Budget pill
+    if (group.budget_min != null && group.budget_max != null) {
+        pills.push(`💸 $${group.budget_min}–$${group.budget_max}`);
+    } else if (group.budget_min != null) {
+        pills.push(`💸 $${group.budget_min}+`);
+    }
+    
+    // Date pill
+    const prettyDate = formatExchangeDate(group.exchange_date);
+    if (prettyDate) {
+        pills.push(`📅 ${prettyDate}`);
+    }
+    
+    // Location pill
+    if (group.exchange_location) {
+        pills.push(`🏠 ${group.exchange_location}`);
+    }
+    
+    if (!pills.length) return "";
+    
+    return `
+        <div class="group-extras">
+            ${pills.map(txt => `<span class="extra-pill">${txt}</span>`).join("")}
+        </div>
+    `;
+}
+
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', async () => {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -266,6 +346,7 @@ async function createGroupCard(group, participantId) {
             ${statusHtml}
             <p>👥 ${participants.length} participant${participants.length !== 1 ? 's' : ''}</p>
             ${isCreator ? '<p style="color: var(--gold); font-weight: 600;">👑 You\'re the organizer</p>' : ''}
+            ${renderGroupExtras(group)}
             ${assignmentHtml}
         `;
         
@@ -401,6 +482,11 @@ async function showGroupDetails(groupId) {
             inviteSection.style.display = 'none';
         }
         
+        // Prepare participants for avatar chips
+        const participantsForChips = participantsWithProfiles.map(p => ({
+            full_name: p.user_profiles?.full_name || p.user_profiles?.email || 'Unknown User'
+        }));
+        
         let content = `
             <div style="margin-bottom: 20px;">
                 <p><strong>Status:</strong> ${group.is_drawn ? '✅ Draw Complete' : '⏳ Waiting for Draw'}</p>
@@ -410,6 +496,8 @@ async function showGroupDetails(groupId) {
                 ${group.exchange_date ? `<p><strong>📅 Exchange Date:</strong> ${new Date(group.exchange_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>` : ''}
                 ${group.exchange_location ? `<p><strong>📍 Location:</strong> ${group.exchange_location}</p>` : ''}
             </div>
+            
+            ${renderAvatarChips(participantsForChips)}
             
             <h4>Participants:</h4>
             <ul style="list-style: none; padding: 0;">
