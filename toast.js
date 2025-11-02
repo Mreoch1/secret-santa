@@ -6,11 +6,22 @@
 class ToastManager {
     constructor() {
         this.container = null;
-        this.init();
+        this.initialized = false;
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
     }
     
     init() {
         // Create toast container if it doesn't exist
+        if (!document.body) {
+            console.warn('Toast: document.body not ready yet');
+            return;
+        }
+        
         if (!document.getElementById('toast-container')) {
             this.container = document.createElement('div');
             this.container.id = 'toast-container';
@@ -19,6 +30,14 @@ class ToastManager {
             document.body.appendChild(this.container);
         } else {
             this.container = document.getElementById('toast-container');
+        }
+        
+        this.initialized = true;
+    }
+    
+    ensureInitialized() {
+        if (!this.initialized) {
+            this.init();
         }
     }
     
@@ -29,6 +48,12 @@ class ToastManager {
      * @param {number} duration - Duration in ms (0 = permanent until closed)
      */
     show(message, type = 'info', duration = 4000) {
+        this.ensureInitialized();
+        if (!this.container) {
+            console.error('Toast container not initialized');
+            return null;
+        }
+        
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
         toast.setAttribute('role', 'alert');
@@ -98,6 +123,7 @@ class ToastManager {
      * Returns a Promise that resolves with true/false
      */
     confirm(message, title = 'Confirm Action') {
+        this.ensureInitialized();
         return new Promise((resolve) => {
             const modal = document.createElement('div');
             modal.className = 'toast-confirm-modal';
@@ -183,6 +209,7 @@ class ToastManager {
      * Returns a Promise that resolves with the input value or null if cancelled
      */
     prompt(message, defaultValue = '', title = 'Enter Value') {
+        this.ensureInitialized();
         return new Promise((resolve) => {
             const modal = document.createElement('div');
             modal.className = 'toast-confirm-modal';
