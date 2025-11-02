@@ -983,9 +983,12 @@ async function drawNames(groupId) {
         if (!groupError && group) {
             // Send email notifications to all participants
             await sendDrawNotifications(assignments, participantsWithProfiles, group);
+            
+            // Send creator receipt with all assignments
+            await sendCreatorReceipt(assignments, participantsWithProfiles, group);
         }
         
-        alert('🎉 Names drawn successfully!\n\nAll participants have been emailed their Secret Santa assignments!');
+        alert('🎉 Names drawn successfully!\n\nAll participants have been emailed their Secret Santa assignments!\n\nYou will also receive a master list via email for safekeeping.');
         
         // Close modal and reload groups
         document.getElementById('groupDetailsModal').style.display = 'none';
@@ -1066,6 +1069,75 @@ async function sendDrawNotifications(assignments, participants, group) {
     }
     
     console.log(`📧 Email summary: ${emailsSent} sent, ${emailsFailed} failed`);
+}
+
+// Send Creator Receipt with All Assignments
+async function sendCreatorReceipt(assignments, participants, group) {
+    console.log('📧 Sending creator receipt with all assignments...');
+    
+    try {
+        // Find the creator participant
+        const creatorParticipant = participants.find(p => p.id === group.created_by);
+        if (!creatorParticipant || !creatorParticipant.user_profiles) {
+            console.error('Creator participant not found');
+            return;
+        }
+        
+        const creatorEmail = creatorParticipant.user_profiles.email;
+        const creatorName = creatorParticipant.user_profiles.full_name || 'Organizer';
+        
+        if (!creatorEmail) {
+            console.error('Creator email not found');
+            return;
+        }
+        
+        // Build assignment list
+        const assignmentList = assignments.map(assignment => {
+            const giver = participants.find(p => p.id === assignment.giver_id);
+            const receiver = participants.find(p => p.id === assignment.receiver_id);
+            
+            return {
+                giverName: giver?.user_profiles?.full_name || 'Unknown',
+                receiverName: receiver?.user_profiles?.full_name || 'Unknown'
+            };
+        });
+        
+        const siteUrl = window.location.origin;
+        const emailHtml = createCreatorReceiptEmail(
+            creatorName,
+            group.group_code,
+            assignmentList,
+            siteUrl
+        );
+        
+        const emailEndpoint = window.EMAIL_ENDPOINT || 'http://localhost:5001/send-email';
+        
+        console.log(`Sending creator receipt to ${creatorName} (${creatorEmail})`);
+        
+        const response = await fetch(emailEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: 'Secret Santa <santa@holidaydrawnames.com>',
+                to: [creatorEmail],
+                subject: `📋 Secret Santa Master List - ${group.group_code} (For Your Records)`,
+                html: emailHtml
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            console.log('✅ Creator receipt sent successfully');
+        } else {
+            console.error('❌ Failed to send creator receipt:', result.error);
+        }
+        
+    } catch (error) {
+        console.error('Error sending creator receipt:', error);
+    }
 }
 
 // Create Draw Notification Email HTML
@@ -1153,6 +1225,161 @@ function createDrawNotificationEmail(giverName, receiverName, groupCode, siteUrl
                                     </p>
                                     <p style="color: #999; font-size: 12px; margin: 0;">
                                         Making Secret Santa easy and fun!
+                                    </p>
+                                    <p style="color: #999; font-size: 12px; margin: 10px 0 0 0;">
+                                        <a href="${siteUrl}" style="color: #c41e3a; text-decoration: none;">holidaydrawnames.com</a>
+                                    </p>
+                                </td>
+                            </tr>
+                            
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+    `;
+}
+
+// Create Creator Receipt Email HTML
+function createCreatorReceiptEmail(creatorName, groupCode, assignmentList, siteUrl) {
+    // Build the assignment rows HTML
+    let assignmentRows = '';
+    assignmentList.forEach((assignment, index) => {
+        const rowColor = index % 2 === 0 ? '#f8f9fa' : '#ffffff';
+        assignmentRows += `
+            <tr style="background: ${rowColor};">
+                <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">
+                    <strong>${assignment.giverName}</strong>
+                </td>
+                <td style="padding: 15px; text-align: center; border-bottom: 1px solid #e0e0e0; color: #c41e3a; font-size: 20px;">
+                    🎁 →
+                </td>
+                <td style="padding: 15px; border-bottom: 1px solid #e0e0e0;">
+                    <strong>${assignment.receiverName}</strong>
+                </td>
+            </tr>
+        `;
+    });
+    
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Secret Santa Master List</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); min-height: 100vh;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); padding: 40px 20px;">
+                <tr>
+                    <td align="center">
+                        <table width="700" cellpadding="0" cellspacing="0" border="0" style="background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); overflow: hidden; max-width: 100%;">
+                            
+                            <!-- Header -->
+                            <tr>
+                                <td style="background: linear-gradient(135deg, #0f7c3a 0%, #0d6630 100%); padding: 40px; text-align: center;">
+                                    <div style="font-size: 50px; margin-bottom: 10px;">📋</div>
+                                    <h1 style="color: white; margin: 0; font-size: 36px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                                        Secret Santa Master List
+                                    </h1>
+                                    <p style="color: #d1fae5; margin: 10px 0 0 0; font-size: 16px; font-weight: 600;">
+                                        Group: ${groupCode}
+                                    </p>
+                                </td>
+                            </tr>
+                            
+                            <!-- Main Content -->
+                            <tr>
+                                <td style="padding: 40px;">
+                                    <p style="color: #333; font-size: 18px; line-height: 1.6; margin: 0 0 10px 0;">
+                                        Hi ${creatorName}! 👑
+                                    </p>
+                                    
+                                    <p style="color: #555; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+                                        As the group organizer, here's your complete master list of all Secret Santa assignments. <strong>Keep this email safe</strong> in case anyone forgets their assignment or if there are any issues!
+                                    </p>
+                                    
+                                    <!-- Warning Box -->
+                                    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 0 0 30px 0; border-radius: 8px;">
+                                        <p style="color: #92400e; margin: 0; font-weight: bold; font-size: 14px;">
+                                            ⚠️ <strong>CONFIDENTIAL:</strong> This list shows ALL assignments. Keep it private!
+                                        </p>
+                                        <p style="color: #92400e; margin: 10px 0 0 0; font-size: 14px;">
+                                            Don't share this with participants - everyone has received their individual assignment.
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Assignments Table -->
+                                    <h2 style="color: #0f7c3a; font-size: 24px; margin: 30px 0 20px 0; text-align: center;">
+                                        Complete Assignment List
+                                    </h2>
+                                    
+                                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 2px solid #0f7c3a; border-radius: 10px; overflow: hidden; margin: 20px 0;">
+                                        <thead>
+                                            <tr style="background: linear-gradient(135deg, #0f7c3a 0%, #0d6630 100%);">
+                                                <th style="padding: 15px; color: white; text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+                                                    Gift Giver
+                                                </th>
+                                                <th style="padding: 15px; color: white; text-align: center; font-size: 14px; width: 80px;">
+                                                    →
+                                                </th>
+                                                <th style="padding: 15px; color: white; text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+                                                    Gift Receiver
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${assignmentRows}
+                                        </tbody>
+                                    </table>
+                                    
+                                    <!-- Stats Box -->
+                                    <div style="background: #f0f9ff; border: 2px solid #0284c7; border-radius: 10px; padding: 20px; margin: 30px 0; text-align: center;">
+                                        <p style="color: #0c4a6e; margin: 0; font-size: 16px; font-weight: 600;">
+                                            📊 Total Participants: <span style="color: #0284c7; font-size: 24px;">${assignmentList.length}</span>
+                                        </p>
+                                        <p style="color: #64748b; margin: 10px 0 0 0; font-size: 14px;">
+                                            All participants have been emailed their individual assignments
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Organizer Tips -->
+                                    <div style="background: #f8f9fa; border-radius: 10px; padding: 25px; margin: 30px 0;">
+                                        <h3 style="color: #0f7c3a; margin: 0 0 15px 0; font-size: 18px;">
+                                            🎅 Organizer Tips:
+                                        </h3>
+                                        <ul style="color: #555; margin: 0; padding-left: 20px; line-height: 1.8;">
+                                            <li><strong>Keep this email:</strong> Archive it for reference throughout the season</li>
+                                            <li><strong>If someone asks:</strong> You can verify their assignment from this list</li>
+                                            <li><strong>Budget reminder:</strong> Let everyone know the spending limit if you haven't already</li>
+                                            <li><strong>Set the date:</strong> Make sure everyone knows when to exchange gifts</li>
+                                            <li><strong>Check in:</strong> A week before, remind everyone to have their gifts ready</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Call to Action -->
+                                    <div style="text-align: center; margin: 40px 0 20px 0;">
+                                        <a href="${siteUrl}/dashboard.html" style="display: inline-block; background: linear-gradient(135deg, #c41e3a 0%, #a01729 100%); color: white; text-decoration: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);">
+                                            View Dashboard
+                                        </a>
+                                    </div>
+                                    
+                                    <p style="color: #888; font-size: 14px; text-align: center; margin: 20px 0 0 0; line-height: 1.6;">
+                                        You can manage your group and send reminders from your dashboard at<br>
+                                        <a href="${siteUrl}" style="color: #c41e3a; text-decoration: none;">${siteUrl}</a>
+                                    </p>
+                                </td>
+                            </tr>
+                            
+                            <!-- Footer -->
+                            <tr>
+                                <td style="background: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e0e0e0;">
+                                    <p style="color: #666; font-size: 14px; margin: 0 0 10px 0;">
+                                        🎄 <strong>Holiday Draw Names</strong> 🎄
+                                    </p>
+                                    <p style="color: #999; font-size: 12px; margin: 0;">
+                                        Making Secret Santa organization easy!
                                     </p>
                                     <p style="color: #999; font-size: 12px; margin: 10px 0 0 0;">
                                         <a href="${siteUrl}" style="color: #c41e3a; text-decoration: none;">holidaydrawnames.com</a>

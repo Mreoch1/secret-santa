@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how Holiday Draw Names works - the easiest way to organize Secret Santa gift exchanges for groups">
+    <title>How It Works - Holiday Draw Names | Secret Santa Made Easy</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --red: #c41e3a;
+            --green: #0f7c3a;
+            --gold: #ffd700;
+            --dark-green: #1a472a;
+            --light-bg: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, var(--dark-green) 0%, #2d5a3d 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--red) 0%, #a01729 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            color: #ffe5e5;
+            font-size: 1.2em;
+        }
+        
+        .nav-links {
+            margin-top: 15px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h2 {
+            color: var(--red);
+            font-size: 2em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        h3 {
+            color: var(--green);
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        /* Role Cards */
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .role-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 3px solid var(--green);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .role-card.creator {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: var(--gold);
+        }
+        
+        .role-card-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+        
+        .role-card h3 {
+            margin-top: 0;
+            justify-content: center;
+        }
+        
+        /* Steps */
+        .steps {
+            counter-reset: step-counter;
+        }
+        
+        .step {
+            background: var(--light-bg);
+            border-left: 5px solid var(--green);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            position: relative;
+            padding-left: 80px;
+        }
+        
+        .step::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--green);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(15, 124, 58, 0.3);
+        }
+        
+        .step h4 {
+            color: var(--green);
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .step.creator-step {
+            border-left-color: var(--gold);
+        }
+        
+        .step.creator-step::before {
+            background: var(--gold);
+            color: #333;
+        }
+        
+        .step.creator-step h4 {
+            color: #92400e;
+        }
+        
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .feature h4 {
+            color: var(--green);
+            margin-bottom: 10px;
+        }
+        
+        /* Info Boxes */
+        .info-box {
+            background: #f0f9ff;
+            border: 2px solid #0284c7;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-box.warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+        
+        .info-box.success {
+            background: #f0fdf4;
+            border-color: var(--green);
+        }
+        
+        .info-box h4 {
+            margin-bottom: 10px;
+            color: #0c4a6e;
+        }
+        
+        .info-box.warning h4 {
+            color: #92400e;
+        }
+        
+        .info-box.success h4 {
+            color: var(--green);
+        }
+        
+        /* FAQ */
+        .faq-item {
+            background: var(--light-bg);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 4px solid var(--red);
+        }
+        
+        .faq-question {
+            color: var(--red);
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .faq-answer {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        /* CTA Button */
+        .cta-section {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--red) 0%, #a01729 100%);
+            border-radius: 20px;
+            margin: 40px 0;
+        }
+        
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: var(--red);
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+        }
+        
+        .footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Snowflakes */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            z-index: 9999;
+            user-select: none;
+            cursor: default;
+            animation: fall linear infinite;
+            color: white;
+            font-size: 1.5em;
+            opacity: 0.8;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content-card {
+                padding: 25px;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .step {
+                padding-left: 70px;
+            }
+            
+            .step::before {
+                width: 35px;
+                height: 35px;
+                font-size: 1.2em;
+                left: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Snowflakes -->
+    <div id="snowflakes"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <h1>🎅 How It Works 🎄</h1>
+        <p>Your complete guide to organizing Secret Santa</p>
+        <div class="nav-links">
+            <a href="/index.html">🏠 Home</a>
+            <a href="/auth.html">🎁 Get Started</a>
+            <a href="/dashboard.html">📊 Dashboard</a>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="container">
+        
+        <!-- Introduction -->
+        <div class="content-card">
+            <h2>🎁 What is Holiday Draw Names?</h2>
+            <p>
+                Holiday Draw Names is a <strong>free, easy-to-use platform</strong> for organizing Secret Santa gift exchanges. 
+                Whether it's for family, friends, coworkers, or any group, we handle all the details so you can focus on the fun!
+            </p>
+            <p>
+                Our smart matching system ensures everyone gets a fair pairing, automatically avoiding spouses and blocked pairings. 
+                Plus, everyone receives email notifications with their assignments – no more paper slips or awkward reveals!
+            </p>
+            
+            <div class="info-box success">
+                <h4>✨ Why Choose Us?</h4>
+                <ul style="margin-left: 20px; line-height: 2;">
+                    <li>🔐 <strong>Secure & Private:</strong> Your data is protected with password-protected groups</li>
+                    <li>📧 <strong>Automatic Emails:</strong> Everyone gets their assignment instantly</li>
+                    <li>🚫 <strong>Smart Matching:</strong> Avoid spouses, family members, or anyone you choose</li>
+                    <li>👥 <strong>Multi-Group Support:</strong> Join unlimited Secret Santa groups</li>
+                    <li>📋 <strong>Organizer Receipt:</strong> Creators get a master list for safekeeping</li>
+                    <li>🎄 <strong>100% Free:</strong> No hidden fees, ever!</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Two Roles -->
+        <div class="content-card">
+            <h2>👥 Two Ways to Participate</h2>
+            <p>There are two roles when using Holiday Draw Names:</p>
+            
+            <div class="role-cards">
+                <div class="role-card creator">
+                    <div class="role-card-icon">👑</div>
+                    <h3>Group Creator</h3>
+                    <p>
+                        <strong>The Organizer!</strong> You create the group, invite participants, 
+                        and click the magic "Draw Names" button when everyone has joined.
+                    </p>
+                </div>
+                
+                <div class="role-card">
+                    <div class="role-card-icon">🎁</div>
+                    <h3>Group Member</h3>
+                    <p>
+                        <strong>The Participant!</strong> You receive an invitation, join the group, 
+                        and wait to find out who you're buying a gift for.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- For Group Creators -->
+        <div class="content-card">
+            <h2>👑 For Group Creators (Organizers)</h2>
+            <p>
+                If you're organizing a Secret Santa, here's exactly what you need to do:
+            </p>
+            
+            <div class="steps">
+                <div class="step creator-step">
+                    <h4>Create Your Account</h4>
+                    <p>Sign up with your name, email, and password. Add your spouse's name if applicable (so you don't get matched with them!).</p>
+                </div>
+                
+                <div class="step creator-step">
+                    <h4>Create Your Group</h4>
+                    <p>Click "Join a Group" and then "Create New Group". Choose a unique group code (like "FAMILY2024") and create a password. This keeps your group private!</p>
+                </div>
+                
+                <div class="step creator-step">
+                    <h4>Invite Your Participants</h4>
+                    <p>Click on your group card, then "Send Email Invites". Enter everyone's email addresses and add a personal message. They'll receive a beautiful invitation with the group code and password!</p>
+                </div>
+                
+                <div class="step creator-step">
+                    <h4>Manage Your Group</h4>
+                    <p>Watch as participants join in real-time! You can edit names, remove people, and set up "blocklist" rules to prevent certain pairings (like family members, roommates, etc.).</p>
+                </div>
+                
+                <div class="step creator-step">
+                    <h4>Draw Names!</h4>
+                    <p>When everyone has joined, click "Draw Names". Our smart algorithm creates fair pairings while respecting all your blocklist rules and spouse exclusions.</p>
+                </div>
+                
+                <div class="step creator-step">
+                    <h4>Get Your Master List</h4>
+                    <p><strong>Important!</strong> You'll receive TWO emails: your personal assignment (like everyone else) AND a master list showing all pairings. Keep this safe in case anyone forgets their assignment!</p>
+                </div>
+            </div>
+            
+            <div class="info-box warning">
+                <h4>⚠️ Creator Pro Tips</h4>
+                <ul style="margin-left: 20px; line-height: 2;">
+                    <li>Make sure everyone has joined before drawing names – you can't undo it easily!</li>
+                    <li>Set a gift budget and exchange date before drawing</li>
+                    <li>Keep the master list email for reference throughout the season</li>
+                    <li>Use the blocklist feature for complex groups (families, couples, etc.)</li>
+                    <li>You can send reminder emails to people who haven't joined yet</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- For Group Members -->
+        <div class="content-card">
+            <h2>🎁 For Group Members (Participants)</h2>
+            <p>
+                If you received an invitation to join a Secret Santa, here's what to do:
+            </p>
+            
+            <div class="steps">
+                <div class="step">
+                    <h4>Check Your Email</h4>
+                    <p>You'll receive a beautiful invitation email with a group code and password. Save this info!</p>
+                </div>
+                
+                <div class="step">
+                    <h4>Create Your Account</h4>
+                    <p>Visit the website and sign up with your name, email, and password. Add your spouse's name if you have one (so you don't get matched with them!).</p>
+                </div>
+                
+                <div class="step">
+                    <h4>Join the Group</h4>
+                    <p>Click "Join a Group" and enter the group code and password from the invitation email. You're in!</p>
+                </div>
+                
+                <div class="step">
+                    <h4>Wait for the Draw</h4>
+                    <p>You'll see a message that says "Waiting for Draw". The organizer will click "Draw Names" when everyone has joined.</p>
+                </div>
+                
+                <div class="step">
+                    <h4>Get Your Assignment!</h4>
+                    <p>🎉 You'll receive an email with your Secret Santa assignment! You'll also see it on your dashboard. Remember – keep it secret!</p>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h4>💡 Member Tips</h4>
+                <ul style="margin-left: 20px; line-height: 2;">
+                    <li>Join as soon as you get the invitation – don't hold up the group!</li>
+                    <li>Add your spouse's name when creating your account</li>
+                    <li>Check your spam folder if you don't receive the assignment email</li>
+                    <li>You can always log in to your dashboard to see your assignment</li>
+                    <li>Don't tell anyone who you got – it ruins the surprise!</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Key Features -->
+        <div class="content-card">
+            <h2>✨ Key Features</h2>
+            
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">🔐</div>
+                    <h4>Password Protected</h4>
+                    <p>Every group requires a password – only invited people can join</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">📧</div>
+                    <h4>Email Notifications</h4>
+                    <p>Automatic invitations and assignment emails to everyone</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">🚫</div>
+                    <h4>Smart Blocklist</h4>
+                    <p>Prevent specific pairings (spouses, family, roommates, etc.)</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">📋</div>
+                    <h4>Master List</h4>
+                    <p>Organizers receive a complete list of all pairings</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h4>Real-Time Updates</h4>
+                    <p>See participants join live as they sign up</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">👥</div>
+                    <h4>Multi-Group</h4>
+                    <p>Join unlimited groups – perfect for multiple exchanges</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- The Draw Process -->
+        <div class="content-card">
+            <h2>🎲 How the Draw Works</h2>
+            
+            <h3>Our Smart Matching Algorithm</h3>
+            <p>
+                When the organizer clicks "Draw Names", our algorithm creates Secret Santa pairings that are:
+            </p>
+            
+            <ul style="margin: 20px 0 20px 30px; line-height: 2;">
+                <li>✅ <strong>Fair:</strong> Everyone gives to someone and receives from someone</li>
+                <li>✅ <strong>Random:</strong> Completely unpredictable assignments</li>
+                <li>✅ <strong>Smart:</strong> Automatically avoids spouses (if you added spouse names)</li>
+                <li>✅ <strong>Respectful:</strong> Honors all blocklist rules you've set</li>
+                <li>✅ <strong>Self-aware:</strong> Nobody gets themselves (obviously!)</li>
+            </ul>
+            
+            <div class="info-box success">
+                <h4>🎁 What Happens When Names Are Drawn?</h4>
+                <ol style="margin: 15px 0 0 30px; line-height: 2;">
+                    <li>Algorithm creates fair pairings in seconds</li>
+                    <li>All assignments are saved securely to the database</li>
+                    <li>Every participant receives an email with their assignment</li>
+                    <li>The group is marked as "Complete" on everyone's dashboard</li>
+                    <li>The organizer receives a master list email for safekeeping</li>
+                    <li>Everyone can log in anytime to see their assignment</li>
+                </ol>
+            </div>
+            
+            <h3>🔄 Need to Redraw?</h3>
+            <p>
+                Made a mistake? No problem! Organizers can click "Undo & Redraw Names" to reset everything and draw again. 
+                This is helpful if someone joined late or you need to change the blocklist rules.
+            </p>
+        </div>
+        
+        <!-- FAQs -->
+        <div class="content-card">
+            <h2>❓ Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: Is this really free?</div>
+                <div class="faq-answer">
+                    A: Yes! 100% free, no credit card required, no hidden fees, ever. We just love making Secret Santa easy!
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: How many people can be in a group?</div>
+                <div class="faq-answer">
+                    A: As many as you want! We've tested with groups of 2 to 100+ participants. The algorithm handles any size.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: Can I join multiple Secret Santa groups?</div>
+                <div class="faq-answer">
+                    A: Absolutely! Join as many groups as you want – one for family, one for work, one for friends, etc. Your dashboard shows all of them.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: What if someone forgets their assignment?</div>
+                <div class="faq-answer">
+                    A: They can log back into their dashboard anytime to see it. Or the group organizer can check the master list email they received.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: Can people see who has who?</div>
+                <div class="faq-answer">
+                    A: No! Each person only sees their own assignment. Only the group organizer receives the master list (for troubleshooting purposes).
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: What's the blocklist feature?</div>
+                <div class="faq-answer">
+                    A: Organizers can prevent specific people from being matched together. Perfect for couples, family members living together, or anyone who already exchanges gifts. Just select who can't be matched with whom!
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: What if I don't receive the email?</div>
+                <div class="faq-answer">
+                    A: Check your spam/junk folder first. Then make sure your email is correct in your profile. You can always log in to see your assignment on your dashboard!
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: Can I change my assignment after the draw?</div>
+                <div class="faq-answer">
+                    A: No – that would ruin the fairness! But the organizer can "Undo & Redraw" to reset everything and draw again if needed.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Q: Is my information secure?</div>
+                <div class="faq-answer">
+                    A: Yes! We use industry-standard security, encrypted passwords, and secure databases. Your data is never shared with anyone.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 style="justify-content: center;">🎅 Ready to Start Your Secret Santa? 🎄</h2>
+            <p style="color: white; margin-bottom: 30px; font-size: 1.1em;">
+                It only takes 2 minutes to create a group and send invitations!
+            </p>
+            <a href="/auth.html" class="cta-button">Get Started Now →</a>
+        </div>
+        
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p>🎄 <strong>Holiday Draw Names</strong> - Making Secret Santa Easy Since 2025 🎄</p>
+        <p style="margin-top: 10px;">
+            <a href="/privacy.html">Privacy Policy</a> • 
+            <a href="/terms.html">Terms of Service</a> • 
+            <a href="/how-it-works.html">How It Works</a>
+        </p>
+        <p style="margin-top: 10px; color: #d1fae5;">
+            Made with ❤️ for spreading holiday cheer
+        </p>
+    </footer>
+    
+    <script>
+        // Create snowflakes
+        function createSnowflakes() {
+            const snowflakesContainer = document.getElementById('snowflakes');
+            const snowflakeCount = 20;
+            
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.textContent = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                snowflake.style.animationDelay = Math.random() * 10 + 's';
+                snowflake.style.fontSize = (Math.random() * 1 + 0.5) + 'em';
+                snowflakesContainer.appendChild(snowflake);
+            }
+        }
+        
+        createSnowflakes();
+    </script>
+</body>
+</html>
+

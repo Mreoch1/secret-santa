@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | Holiday Draw Names</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a472a 0%, #0f7c3a 50%, #c41e3a 100%);
+            margin: 0;
+        }
+        .error-container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            margin: 20px;
+        }
+        .emoji { font-size: 100px; margin-bottom: 20px; }
+        h1 {
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: 72px;
+            color: #c41e3a;
+            margin: 20px 0;
+        }
+        p {
+            font-size: 20px;
+            color: #666;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #0f7c3a 0%, #0d6630 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="emoji">🎅❄️</div>
+        <h1>404</h1>
+        <p><strong>Oops! This page got lost in the snow!</strong></p>
+        <p>The page you're looking for doesn't exist or may have been moved.</p>
+        <a href="/" class="btn">🏠 Go Home</a>
+        <a href="/auth.html" class="btn" style="background: linear-gradient(135deg, #c41e3a 0%, #a01729 100%);">🎄 Sign In</a>
+    </div>
+</body>
+</html>
+
