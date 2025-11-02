@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Debug: Check if QRCode library loaded
     if (typeof QRCode !== 'undefined') {
-        console.log('✅ QRCode library loaded successfully');
+        console.log('✅ QRCode library loaded successfully', QRCode);
     } else {
-        console.warn('⚠️ QRCode library not loaded');
+        console.error('⚠️ QRCode library not loaded - QR features will not work');
     }
     
     // Check authentication
@@ -2322,25 +2322,25 @@ async function showQRCode(groupCode, groupPassword) {
         document.getElementById('qrModal').style.display = 'block';
         document.getElementById('qrGroupCode').textContent = `Group: ${groupCode}`;
         
-        // Generate QR code
-        const canvas = document.getElementById('qrCanvas');
+        // Get container (div, not canvas with QRCodeJS)
+        const qrContainer = document.getElementById('qrCodeContainer');
         
-        // Clear previous QR if any
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Clear previous QR code
+        qrContainer.innerHTML = '';
         
-        await QRCode.toCanvas(canvas, joinUrl, {
-            width: 300,
-            margin: 2,
-            color: {
-                dark: '#000000',
-                light: '#ffffff'
-            }
+        // Generate QR code using QRCodeJS library
+        new QRCode(qrContainer, {
+            text: joinUrl,
+            width: 256,
+            height: 256,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
         });
         
-        // Store for download
-        window.currentQRCanvas = canvas;
+        // Store group code for download
         window.currentQRGroupCode = groupCode;
+        window.currentQRContainer = qrContainer;
         
         Analytics.event('generate_qr_code');
         
@@ -2352,13 +2352,31 @@ async function showQRCode(groupCode, groupPassword) {
 
 // Download QR Code as Image
 function downloadQRCode() {
-    if (!window.currentQRCanvas) {
+    if (!window.currentQRContainer) {
         Toast.error('No QR code to download');
         return;
     }
     
     try {
-        const url = window.currentQRCanvas.toDataURL('image/png');
+        // QRCodeJS creates a canvas inside the container
+        const canvas = window.currentQRContainer.querySelector('canvas');
+        if (!canvas) {
+            // Try to find img instead
+            const img = window.currentQRContainer.querySelector('img');
+            if (img) {
+                const link = document.createElement('a');
+                link.download = `${window.currentQRGroupCode}-qr-code.png`;
+                link.href = img.src;
+                link.click();
+                Toast.success('QR code downloaded!');
+                Analytics.event('download_qr_code');
+                return;
+            }
+            Toast.error('QR code not found');
+            return;
+        }
+        
+        const url = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.download = `${window.currentQRGroupCode}-qr-code.png`;
         link.href = url;

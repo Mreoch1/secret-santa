@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="analytics.js"></script>
     <script src="sentry.js"></script>
     <script src="toast.js"></script>
@@ -292,7 +292,7 @@
             <p class="info-text" style="text-align: center;">Scan this QR code to join the group instantly!</p>
             
             <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;">
-                <canvas id="qrCanvas" style="max-width: 100%;"></canvas>
+                <div id="qrCodeContainer" style="display: inline-block;"></div>
             </div>
             
             <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
