@@ -7,6 +7,13 @@ let userProfile = null;
 document.addEventListener('DOMContentLoaded', async () => {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
+    // Debug: Check if QRCode library loaded
+    if (typeof QRCode !== 'undefined') {
+        console.log('✅ QRCode library loaded successfully');
+    } else {
+        console.warn('⚠️ QRCode library not loaded');
+    }
+    
     // Check authentication
     const { data: { session } } = await supabase.auth.getSession();
     
@@ -2302,6 +2309,13 @@ async function copyToClipboard(text, successMessage = 'Copied to clipboard!') {
 // Generate and Show QR Code
 async function showQRCode(groupCode, groupPassword) {
     try {
+        // Check if QRCode library is loaded
+        if (typeof QRCode === 'undefined') {
+            Toast.error('QR Code library not loaded. Please refresh the page.');
+            console.error('QRCode library not available');
+            return;
+        }
+        
         const joinUrl = `${window.location.origin}/auth.html?join=${groupCode}&pwd=${encodeURIComponent(groupPassword)}`;
         
         // Show modal
@@ -2310,6 +2324,11 @@ async function showQRCode(groupCode, groupPassword) {
         
         // Generate QR code
         const canvas = document.getElementById('qrCanvas');
+        
+        // Clear previous QR if any
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
         await QRCode.toCanvas(canvas, joinUrl, {
             width: 300,
             margin: 2,
@@ -2327,7 +2346,7 @@ async function showQRCode(groupCode, groupPassword) {
         
     } catch (error) {
         console.error('Error generating QR code:', error);
-        Toast.error('Error generating QR code');
+        Toast.error('Error generating QR code: ' + error.message);
     }
 }
 
