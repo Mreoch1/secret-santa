@@ -373,6 +373,129 @@
                 left: 15px;
             }
         }
+        
+        /* ========================================
+           PHASE 3: FINAL POLISH
+           ======================================== */
+        
+        /* Modern Stepper Enhancement */
+        .step {
+            background: rgba(255,255,255,0.95) !important;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+            transition: all 0.2s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.18) !important;
+        }
+        
+        .step::before {
+            background: radial-gradient(circle at 30% 30%, #ffd479 0%, #d4a640 70%) !important;
+            color: #2b1a00 !important;
+            border: 2px solid rgba(0,0,0,0.15);
+        }
+        
+        .step.creator-step::before {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b 0%, #c92a2a 70%) !important;
+            color: white !important;
+        }
+        
+        /* FAQ Accordion */
+        .faq-item {
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 12px;
+            padding: 0;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        
+        .faq-header {
+            all: unset;
+            display: flex;
+            width: 100%;
+            align-items: flex-start;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 1rem 1.25rem;
+            color: #333;
+            font-family: var(--font-heading, 'Poppins', sans-serif);
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            transition: background 0.2s ease;
+        }
+        
+        .faq-header:hover {
+            background: rgba(255,215,0,0.1);
+        }
+        
+        .faq-question {
+            flex: 1;
+            padding-right: 1rem;
+        }
+        
+        .faq-icon {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gold, #ffd479);
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+        
+        .faq-header[aria-expanded="true"] .faq-icon {
+            transform: rotate(45deg);
+        }
+        
+        .faq-panel {
+            padding: 0 1.25rem 1.25rem;
+            color: #555;
+            font-family: var(--font-body, 'Inter', sans-serif);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .faq-panel[hidden] {
+            display: none;
+        }
+        
+        .faq-answer {
+            margin: 0;
+        }
+        
+        /* Shimmering Brand Title */
+        .brand-title {
+            font-family: var(--font-heading, 'Poppins', sans-serif);
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: white;
+            text-align: center;
+            margin: 0;
+        }
+        
+        .brand-gradient {
+            background-image: linear-gradient(
+                90deg,
+                #fff 0%,
+                #ffd479 30%,
+                #fff 60%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+        }
+        
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: 0 0;   }
+        }
     </style>
     <link rel="stylesheet" href="toast.css">
     <script src="analytics.js"></script>
@@ -384,8 +507,8 @@
     
     <!-- Header -->
     <header class="header">
-        <h1>🎅 How It Works 🎄</h1>
-        <p>Your complete guide to organizing Secret Santa</p>
+        <h1 class="brand-title"><span class="brand-gradient">🎅 Holiday Draw Names 🎄</span></h1>
+        <p style="margin-top: 10px;">Your complete guide to organizing Secret Santa</p>
         <div class="nav-links">
             <a href="/index.html">🏠 Home</a>
             <a href="/auth.html">🎁 Get Started</a>
@@ -680,93 +803,132 @@
             <h2>❓ Frequently Asked Questions</h2>
             
             <div class="faq-item">
-                <div class="faq-question">Q: Is this really free?</div>
-                <div class="faq-answer">
-                    A: Yes! 100% free, no credit card required, no hidden fees, ever. We just love making Secret Santa easy!
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">Is this really free?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">Yes! 100% free, no credit card required, no hidden fees, ever. We just love making Secret Santa easy!</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: How many people can be in a group?</div>
-                <div class="faq-answer">
-                    A: As many as you want! We've tested with groups of 2 to 100+ participants. The algorithm handles any size.
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">How many people can be in a group?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">As many as you want! We've tested with groups of 2 to 100+ participants. The algorithm handles any size.</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: Can I join multiple Secret Santa groups?</div>
-                <div class="faq-answer">
-                    A: Absolutely! Join as many groups as you want – one for family, one for work, one for friends, etc. Your dashboard shows all of them.
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">Can I join multiple Secret Santa groups?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">Absolutely! Join as many groups as you want – one for family, one for work, one for friends, etc. Your dashboard shows all of them.</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: What if someone forgets their assignment?</div>
-                <div class="faq-answer">
-                    A: They can log back into their dashboard anytime to see it. Or the group organizer can check the master list email they received.
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">What if someone forgets their assignment?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">They can log back into their dashboard anytime to see it. Or the group organizer can check the master list email they received.</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: Can people see who has who?</div>
-                <div class="faq-answer">
-                    A: No! Each person only sees their own assignment. Only the group organizer receives the master list (for troubleshooting purposes).
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">Can people see who has who?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">No! Each person only sees their own assignment. Only the group organizer receives the master list (for troubleshooting purposes).</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: What's the blocklist feature?</div>
-                <div class="faq-answer">
-                    A: Organizers can prevent specific people from being matched together. Perfect for couples, family members living together, or anyone who already exchanges gifts. Just select who can't be matched with whom!
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">What's the blocklist feature?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">Organizers can prevent specific people from being matched together. Perfect for couples, family members living together, or anyone who already exchanges gifts. Just select who can't be matched with whom!</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: What if I don't receive the email?</div>
-                <div class="faq-answer">
-                    A: Check your spam/junk folder first. Then make sure your email is correct in your profile. You can always log in to see your assignment on your dashboard!
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">What if I don't receive the email?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">Check your spam/junk folder first. Then make sure your email is correct in your profile. You can always log in to see your assignment on your dashboard!</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: Can I change my assignment after the draw?</div>
-                <div class="faq-answer">
-                    A: No – that would ruin the fairness! But the organizer can "Undo & Redraw" to reset everything and draw again if needed.
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">Can I change my assignment after the draw?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">No – that would ruin the fairness! But the organizer can "Undo & Redraw" to reset everything and draw again if needed.</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: Is my information secure?</div>
-                <div class="faq-answer">
-                    A: Yes! We use industry-standard security, encrypted passwords, and secure databases. Your data is never shared with anyone.
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">Is my information secure?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">Yes! We use industry-standard security, encrypted passwords, and secure databases. Your data is never shared with anyone.</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: How do wishlists work?</div>
-                <div class="faq-answer">
-                    A: Click "My Wishlist" in any group to add gift ideas. You can include descriptions, links to products, price ranges, and priority levels (high/medium/low). After names are drawn, your Secret Santa can view your wishlist to see what you'd like!
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">How do wishlists work?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">Click "My Wishlist" in any group to add gift ideas. You can include descriptions, links to products, price ranges, and priority levels (high/medium/low). After names are drawn, your Secret Santa can view your wishlist to see what you'd like!</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: How do QR codes work?</div>
-                <div class="faq-answer">
-                    A: Group creators can generate a QR code that contains the group code and password. Share it via text, print it, or display it at gatherings. When someone scans it, they're taken to the sign-up page and automatically joined to the group after creating an account!
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">How do QR codes work?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">Group creators can generate a QR code that contains the group code and password. Share it via text, print it, or display it at gatherings. When someone scans it, they're taken to the sign-up page and automatically joined to the group after creating an account!</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: Can I set a gift budget?</div>
-                <div class="faq-answer">
-                    A: Yes! When creating a group, you can set a minimum and maximum budget (e.g., $20-$50), an exchange date, and even a location. This information is displayed to all participants so everyone knows the plan!
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">Can I set a gift budget?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">Yes! When creating a group, you can set a minimum and maximum budget (e.g., $20-$50), an exchange date, and even a location. This information is displayed to all participants so everyone knows the plan!</p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question">Q: What if we need to redraw names?</div>
-                <div class="faq-answer">
-                    A: No problem! Group organizers can click "Undo & Redraw Names" to clear all assignments and draw again. This is perfect if someone joined late, you want to adjust the blocklist, or you just want a different pairing.
+                <button class="faq-header" aria-expanded="false">
+                    <span class="faq-question">What if we need to redraw names?</span>
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-panel" hidden>
+                    <p class="faq-answer">No problem! Group organizers can click "Undo & Redraw Names" to clear all assignments and draw again. This is perfect if someone joined late, you want to adjust the blocklist, or you just want a different pairing.</p>
                 </div>
             </div>
         </div>
@@ -814,6 +976,25 @@
         }
         
         createSnowflakes();
+    </script>
+    
+    <!-- FAQ Accordion JavaScript -->
+    <script>
+        document.querySelectorAll('.faq-header').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const expanded = btn.getAttribute('aria-expanded') === 'true';
+                const panel = btn.nextElementSibling;
+                
+                btn.setAttribute('aria-expanded', !expanded);
+                btn.querySelector('.faq-icon').textContent = expanded ? '+' : '–';
+                
+                if (expanded) {
+                    panel.hidden = true;
+                } else {
+                    panel.hidden = false;
+                }
+            });
+        });
     </script>
 </body>
 </html>
