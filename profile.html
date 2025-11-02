@@ -16,9 +16,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="analytics.js"></script>
+    <script src="sentry.js"></script>
     <script src="toast.js"></script>
 </head>
 <body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
     <div class="snowflakes" aria-hidden="true">
         <div class="snowflake">❅</div>
         <div class="snowflake">❆</div>
@@ -35,7 +39,7 @@
             <p class="tagline">Update Your Information</p>
         </header>
 
-        <div class="card auth-card" style="max-width: 600px; margin: 40px auto;">
+        <div class="card auth-card" id="main-content" style="max-width: 600px; margin: 40px auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2>Edit Profile</h2>
                 <a href="dashboard.html" class="btn" style="background: var(--green); color: white; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 14px;">

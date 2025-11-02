@@ -16,9 +16,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="analytics.js"></script>
+    <script src="sentry.js"></script>
     <script src="toast.js"></script>
 </head>
 <body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
     <!-- Snowflakes Background -->
     <div class="snowflakes" aria-hidden="true">
         <div class="snowflake">❅</div>
@@ -59,6 +63,7 @@
 
         <!-- Dashboard Page -->
         <div id="dashboardPage" class="page active">
+            <div id="main-content">
             <div class="card">
                 <div class="dashboard-header">
                     <div>
@@ -98,6 +103,7 @@
                     <button id="createGroupBtn2" class="add-group-btn" style="background: var(--primary-green);">+ Create a Group</button>
                 </div>
             </div>
+            </div><!-- End main-content -->
         </div>
 
         <!-- Join Group Modal -->

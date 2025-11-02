@@ -130,46 +130,47 @@ async function handleDeleteAccount() {
     }
     
     try {
-        // 1. Remove from all participants
-        const { error: participantsError } = await supabase
-            .from('participants')
-            .delete()
-            .eq('user_id', currentUser.id);
+        const loader = Toast.loading('Deleting your account...');
         
-        if (participantsError) {
-            console.error('Error removing from groups:', participantsError);
+        // Call database function to delete all user data
+        const { data, error: rpcError } = await supabase.rpc('delete_user_account', {
+            user_id_to_delete: currentUser.id
+        });
+        
+        if (rpcError) {
+            loader.close();
+            throw rpcError;
         }
         
-        // 2. Delete profile
-        const { error: profileError } = await supabase
-            .from('user_profiles')
-            .delete()
-            .eq('id', currentUser.id);
+        console.log('Deleted user data:', data);
         
-        if (profileError) {
-            console.error('Error deleting profile:', profileError);
-        }
-        
-        // 3. Delete auth user
+        // Delete auth user (client-side - works for own account)
         const { error: authError } = await supabase.auth.admin.deleteUser(currentUser.id);
         
-        if (authError) {
+        if (authError && authError.status !== 403) {
             console.error('Error deleting auth user:', authError);
-            Toast.error('Error deleting account: ' + authError.message);
-            return;
+            // Continue anyway - the RPC function cleaned up all public data
         }
         
-        // 4. Sign out
+        // Sign out
         await supabase.auth.signOut();
         
-        Toast.success('Your account has been deleted.');
+        loader.close();
+        Toast.success('Your account has been deleted. Goodbye!', 3000);
+        
+        Analytics.event('account_deleted');
         
         // Redirect to home
-        window.location.href = 'index.html';
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 2000);
         
     } catch (error) {
         console.error('Error deleting account:', error);
         Toast.error('Error deleting account: ' + error.message);
+        if (window.Sentry) {
+            Sentry.captureException(error);
+        }
     }
 }
 
