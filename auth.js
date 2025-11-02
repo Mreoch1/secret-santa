@@ -5,10 +5,26 @@ let supabase;
 document.addEventListener('DOMContentLoaded', async () => {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
+    // Check for QR code join parameters in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('join')) {
+        const groupCode = urlParams.get('join');
+        const groupPassword = urlParams.get('pwd');
+        
+        // Store in sessionStorage to use after login
+        sessionStorage.setItem('pendingGroupJoin', JSON.stringify({
+            code: groupCode,
+            password: groupPassword
+        }));
+        
+        // Show helpful message
+        Toast.info(`You're joining group: ${groupCode}\n\nPlease sign in or create an account first!`, 6000);
+    }
+    
     // Check if user is already logged in
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-        // Redirect to dashboard
+        // Redirect to dashboard (where auto-join will happen)
         window.location.href = 'index.html';
         return;
     }

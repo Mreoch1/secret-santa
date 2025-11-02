@@ -39,7 +39,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Listen for real-time updates
     setupRealtimeListeners();
+    
+    // Check for pending group join from QR code
+    await checkPendingGroupJoin();
 });
+
+// Check and Handle Pending Group Join from QR Code
+async function checkPendingGroupJoin() {
+    try {
+        const pending = sessionStorage.getItem('pendingGroupJoin');
+        if (!pending) return;
+        
+        // Parse the pending join data
+        const joinData = JSON.parse(pending);
+        
+        // Remove from sessionStorage
+        sessionStorage.removeItem('pendingGroupJoin');
+        
+        // Show loading toast
+        const loader = Toast.loading(`Joining group ${joinData.code}...`);
+        
+        // Wait a moment for dashboard to fully load
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Attempt to join the group
+        await joinGroup(joinData.code, joinData.password);
+        
+        loader.close();
+        
+    } catch (error) {
+        console.error('Error auto-joining group:', error);
+    }
+}
 
 // Load User Profile
 async function loadUserProfile() {
