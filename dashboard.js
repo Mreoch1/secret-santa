@@ -1098,6 +1098,11 @@ async function drawNames(groupId) {
             await sendCreatorReceipt(assignments, participantsWithProfiles, group);
         }
         
+        // Celebration confetti!
+        if (window.createConfetti) {
+            createConfetti();
+        }
+        
         Toast.success('🎉 Names drawn successfully!\n\nEmails are being sent to all participants (may take 30-60 seconds for large groups).\n\nYou will receive a master list via email shortly!', 8000);
         Analytics.drawNames(participantsWithProfiles.length);
         
