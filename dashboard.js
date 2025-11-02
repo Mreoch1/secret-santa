@@ -368,6 +368,9 @@ async function showGroupDetails(groupId) {
                 <p><strong>Status:</strong> ${group.is_drawn ? '✅ Draw Complete' : '⏳ Waiting for Draw'}</p>
                 <p><strong>Participants:</strong> ${participantsWithProfiles.length}</p>
                 ${isCreator ? '<p style="color: var(--gold);"><strong>👑 You\'re the organizer</strong></p>' : ''}
+                ${group.budget_max ? `<p><strong>💰 Budget:</strong> $${group.budget_min}-$${group.budget_max}</p>` : ''}
+                ${group.exchange_date ? `<p><strong>📅 Exchange Date:</strong> ${new Date(group.exchange_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>` : ''}
+                ${group.exchange_location ? `<p><strong>📍 Location:</strong> ${group.exchange_location}</p>` : ''}
             </div>
             
             <h4>Participants:</h4>
@@ -1567,7 +1570,7 @@ async function joinGroup(groupCode, groupPassword) {
 }
 
 // Create Group
-async function createGroup(groupCode, groupPassword) {
+async function createGroup(groupCode, groupPassword, details = {}) {
     try {
         groupCode = groupCode.trim().toUpperCase();
         
@@ -1589,7 +1592,12 @@ async function createGroup(groupCode, groupPassword) {
             .insert([{ 
                 group_code: groupCode, 
                 group_password: groupPassword,
-                is_drawn: false 
+                is_drawn: false,
+                budget_min: details.budgetMin || 20,
+                budget_max: details.budgetMax || 50,
+                currency: 'USD',
+                exchange_date: details.exchangeDate || null,
+                exchange_location: details.exchangeLocation || null
             }])
             .select()
             .single();
@@ -1666,13 +1674,17 @@ function setupEventListeners() {
         const groupCode = document.getElementById('newGroupCode').value;
         const password = document.getElementById('newGroupPassword').value;
         const confirmPassword = document.getElementById('confirmGroupPassword').value;
+        const budgetMin = parseInt(document.getElementById('budgetMin').value) || 20;
+        const budgetMax = parseInt(document.getElementById('budgetMax').value) || 50;
+        const exchangeDate = document.getElementById('exchangeDate').value || null;
+        const exchangeLocation = document.getElementById('exchangeLocation').value.trim() || null;
         
         if (password !== confirmPassword) {
             Toast.error('Passwords do not match! Please try again.');
             return;
         }
         
-        await createGroup(groupCode, password);
+        await createGroup(groupCode, password, { budgetMin, budgetMax, exchangeDate, exchangeLocation });
     });
     
     // Modal close buttons
@@ -2257,6 +2269,113 @@ function initMusic() {
         }
     });
 }
+
+// ========================================
+// UTILITY FUNCTIONS: COPY & QR CODE
+// ========================================
+
+// Copy to Clipboard
+async function copyToClipboard(text, successMessage = 'Copied to clipboard!') {
+    try {
+        await navigator.clipboard.writeText(text);
+        Toast.success(successMessage);
+        Analytics.event('copy_to_clipboard', { content_type: 'text' });
+    } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            Toast.success(successMessage);
+            Analytics.event('copy_to_clipboard_fallback');
+        } catch (e) {
+            Toast.error('Failed to copy');
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+// Generate and Show QR Code
+async function showQRCode(groupCode, groupPassword) {
+    try {
+        const joinUrl = `${window.location.origin}/auth.html?join=${groupCode}&pwd=${encodeURIComponent(groupPassword)}`;
+        
+        // Show modal
+        document.getElementById('qrModal').style.display = 'block';
+        document.getElementById('qrGroupCode').textContent = `Group: ${groupCode}`;
+        
+        // Generate QR code
+        const canvas = document.getElementById('qrCanvas');
+        await QRCode.toCanvas(canvas, joinUrl, {
+            width: 300,
+            margin: 2,
+            color: {
+                dark: '#000000',
+                light: '#ffffff'
+            }
+        });
+        
+        // Store for download
+        window.currentQRCanvas = canvas;
+        window.currentQRGroupCode = groupCode;
+        
+        Analytics.event('generate_qr_code');
+        
+    } catch (error) {
+        console.error('Error generating QR code:', error);
+        Toast.error('Error generating QR code');
+    }
+}
+
+// Download QR Code as Image
+function downloadQRCode() {
+    if (!window.currentQRCanvas) {
+        Toast.error('No QR code to download');
+        return;
+    }
+    
+    try {
+        const url = window.currentQRCanvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `${window.currentQRGroupCode}-qr-code.png`;
+        link.href = url;
+        link.click();
+        Toast.success('QR code downloaded!');
+        Analytics.event('download_qr_code');
+    } catch (error) {
+        console.error('Error downloading QR:', error);
+        Toast.error('Error downloading QR code');
+    }
+}
+
+// Helper functions for group details buttons
+function copyGroupPassword() {
+    const password = document.getElementById('groupPasswordText').textContent;
+    copyToClipboard(password, 'Password copied!');
+}
+
+function copyGroupCode() {
+    const groupCode = document.getElementById('groupDetailsTitle').textContent;
+    copyToClipboard(groupCode, 'Group code copied!');
+}
+
+function showGroupQR() {
+    const groupCode = document.getElementById('groupDetailsTitle').textContent;
+    const password = document.getElementById('groupPasswordText').textContent;
+    showQRCode(groupCode, password);
+}
+
+// Make functions globally available
+window.copyToClipboard = copyToClipboard;
+window.showQRCode = showQRCode;
+window.downloadQRCode = downloadQRCode;
+window.copyGroupPassword = copyGroupPassword;
+window.copyGroupCode = copyGroupCode;
+window.showGroupQR = showGroupQR;
 
 // ========================================
 // WISHLIST FEATURE

@@ -14,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="analytics.js"></script>
     <script src="toast.js"></script>
 </head>
@@ -150,6 +151,32 @@
                         <input type="password" id="confirmGroupPassword" placeholder="Re-enter password" required minlength="4">
                     </div>
                     
+                    <div style="border-top: 2px dashed #ddd; margin: 20px 0; padding-top: 20px;">
+                        <h3 style="color: var(--green); margin-bottom: 15px;">💰 Gift Exchange Details (Optional)</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                            <div class="form-group" style="margin: 0;">
+                                <label for="budgetMin">Min Budget ($)</label>
+                                <input type="number" id="budgetMin" placeholder="20" min="0" value="20">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label for="budgetMax">Max Budget ($)</label>
+                                <input type="number" id="budgetMax" placeholder="50" min="0" value="50">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="exchangeDate">Exchange Date</label>
+                            <input type="date" id="exchangeDate">
+                            <small>When will you exchange gifts?</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="exchangeLocation">Location (Optional)</label>
+                            <input type="text" id="exchangeLocation" placeholder="e.g., Mom's house, Office party room">
+                        </div>
+                    </div>
+                    
                     <button type="submit" class="btn btn-primary">Create Group 🎅</button>
                 </form>
             </div>
@@ -166,8 +193,21 @@
                 </div>
                 
                 <div id="groupPasswordDisplay" style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 10px; display: none;">
-                    <p style="margin: 0; color: #92400e;"><strong>🔒 Group Password:</strong> <span id="groupPasswordText" style="font-family: monospace;"></span></p>
-                    <small style="color: #78350f;">Share this with new members!</small>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <p style="margin: 0; color: #92400e;"><strong>🔒 Group Password:</strong> <span id="groupPasswordText" style="font-family: monospace;"></span></p>
+                        <button id="copyPasswordBtn" onclick="copyGroupPassword()" class="btn" style="background: var(--green); color: white; padding: 6px 16px; font-size: 14px;">
+                            📋 Copy
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 12px;">
+                        <button id="copyGroupCodeBtn" onclick="copyGroupCode()" class="btn" style="background: #3b82f6; color: white; padding: 8px 16px; font-size: 14px; flex: 1;">
+                            📋 Copy Group Code
+                        </button>
+                        <button id="showQRBtn" onclick="showGroupQR()" class="btn" style="background: #8b5cf6; color: white; padding: 8px 16px; font-size: 14px; flex: 1;">
+                            📱 Show QR Code
+                        </button>
+                    </div>
+                    <small style="color: #78350f; display: block; margin-top: 10px;">Share code & password, or use QR code for easy joining!</small>
                 </div>
                 
                 <!-- Invite tracking list will be inserted here -->
@@ -235,6 +275,29 @@
                     </p>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="modal-close">&times;</span>
+            <h2 style="text-align: center;">📱 Scan to Join</h2>
+            <p class="info-text" style="text-align: center;">Scan this QR code to join the group instantly!</p>
+            
+            <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;">
+                <canvas id="qrCanvas" style="max-width: 100%;"></canvas>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 14px; color: #666; text-align: center;">
+                    <strong id="qrGroupCode"></strong>
+                </p>
+            </div>
+            
+            <button onclick="downloadQRCode()" class="btn btn-primary" style="width: 100%;">
+                📥 Download QR Code
+            </button>
         </div>
     </div>
 
