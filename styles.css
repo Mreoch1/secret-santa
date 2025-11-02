@@ -1,13 +1,5 @@
-/* CSS Variables */
-:root {
-    --primary-red: #c41e3a;
-    --primary-green: #0f7c3a;
-    --gold: #ffd700;
-    --snow-white: #ffffff;
-    --cream: #fefaf0;
-    --dark-green: #0a5028;
-    --shadow: rgba(0, 0, 0, 0.1);
-}
+/* CSS Variables - Legacy (importing from design-tokens.css) */
+/* See design-tokens.css for complete design system */
 
 /* Reset & Base Styles */
 * {
@@ -17,12 +9,16 @@
 }
 
 body {
-    font-family: 'Raleway', sans-serif;
-    background: linear-gradient(135deg, #0f7c3a 0%, #c41e3a 100%);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    background: var(--gradient-festive);
     min-height: 100vh;
-    color: #333;
+    color: var(--neutral-700);
     overflow-x: hidden;
     position: relative;
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Snowflakes Animation */
@@ -181,11 +177,13 @@ header {
 }
 
 header h1 {
-    font-family: 'Mountains of Christmas', cursive;
-    font-size: 4em;
-    color: var(--snow-white);
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-    margin-bottom: 10px;
+    font-family: var(--font-display, 'Mountains of Christmas', cursive);
+    font-size: var(--text-5xl);
+    color: white;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+    margin-bottom: var(--space-3);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
     animation: bounce 2s infinite;
 }
 
@@ -210,11 +208,12 @@ header h1 {
 }
 
 .card h2 {
-    font-family: 'Mountains of Christmas', cursive;
+    font-family: var(--font-heading, 'Poppins', sans-serif);
     color: var(--primary-red);
-    font-size: 2.5em;
-    margin-bottom: 30px;
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-8);
     text-align: center;
+    font-weight: var(--font-weight-bold);
 }
 
 .card h3 {
@@ -259,39 +258,51 @@ header h1 {
     font-size: 0.9em;
 }
 
-/* Buttons */
+/* Buttons - Modern Design System */
 .btn {
-    padding: 15px 30px;
+    font-family: var(--font-heading, 'Poppins', sans-serif);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--space-3) var(--space-6);
     border: none;
-    border-radius: 10px;
-    font-size: 1.1em;
-    font-weight: 600;
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--duration-normal) var(--ease-smooth);
     display: block;
     width: 100%;
-    margin-top: 10px;
+    margin-top: var(--space-3);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+    transform: translateY(0);
 }
 
 .btn-primary {
-    background: var(--primary-red);
+    background: var(--gradient-red);
     color: white;
 }
 
 .btn-primary:hover {
-    background: #a01729;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(196, 30, 58, 0.3);
+    background: linear-gradient(135deg, #9a1530 0%, #7d1126 100%);
+    box-shadow: var(--shadow-red);
 }
 
 .btn-secondary {
-    background: #6c757d;
+    background: var(--gradient-green);
     color: white;
 }
 
 .btn-secondary:hover {
-    background: #5a6268;
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, #0a5028 0%, #083d1f 100%);
+    box-shadow: var(--shadow-green);
 }
 
 /* Info Card */
@@ -670,48 +681,78 @@ footer {
 
 .group-card {
     background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border-left: 5px solid var(--primary-green);
-    transition: all 0.3s ease;
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+    border-left: 4px solid transparent;
+    transition: all var(--duration-normal) var(--ease-smooth);
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.group-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-festive);
+    transform: scaleX(0);
+    transition: transform var(--duration-normal) ease;
+}
+
+.group-card:hover::before {
+    transform: scaleX(1);
 }
 
 .group-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl), 0 0 20px rgba(183, 28, 58, 0.1);
     border-left-color: var(--primary-red);
 }
 
 .group-card.drawn {
-    border-left-color: var(--gold);
+    border-left-color: var(--success);
+}
+
+.group-card.drawn::before {
+    background: var(--success);
 }
 
 .group-card h3 {
     color: var(--primary-red);
-    margin-bottom: 15px;
-    font-family: 'Mountains of Christmas', cursive;
-    font-size: 1.8em;
+    margin-bottom: var(--space-4);
+    font-family: var(--font-heading, 'Poppins', sans-serif);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-bold);
 }
 
 .group-status {
-    display: inline-block;
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-size: 0.85em;
-    font-weight: 600;
-    margin-bottom: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-3);
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .group-status.waiting {
-    background: #fef3c7;
-    color: #92400e;
+    background: var(--festive-light-gold);
+    color: var(--warning);
+    border: 1px solid rgba(234, 88, 12, 0.2);
 }
 
 .group-status.complete {
-    background: #d1fae5;
-    color: #065f46;
+    background: var(--festive-light-green);
+    color: var(--success);
+    border: 1px solid rgba(22, 163, 74, 0.2);
 }
 
 .group-assignment {
