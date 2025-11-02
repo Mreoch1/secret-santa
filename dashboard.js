@@ -444,6 +444,47 @@ async function showGroupDetails(groupId) {
         
         content += '</ul>';
         
+        // Add wishlist button for current user
+        content += `
+            <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border: 2px solid var(--gold); border-radius: 10px;">
+                <h4 style="margin: 0 0 10px 0; color: #92400e;">🎁 Gift Wishlist</h4>
+                <p style="margin: 0 0 12px 0; color: #78350f; font-size: 14px;">
+                    Add your gift ideas so your Secret Santa knows what you'd like!
+                </p>
+                <button onclick="openWishlist('${groupId}', '${currentUserParticipant?.id}', true)" class="btn" style="background: var(--gold); color: #333; width: 100%;">
+                    🎁 My Wishlist
+                </button>
+            </div>
+        `;
+        
+        // If draw is complete, show button to view receiver's wishlist
+        if (group.is_drawn && currentUserParticipant) {
+            // Get current user's assignment
+            const { data: myAssignment } = await supabase
+                .from('assignments')
+                .select('receiver_id')
+                .eq('giver_id', currentUserParticipant.id)
+                .single();
+            
+            if (myAssignment) {
+                // Get receiver's name
+                const receiver = participantsWithProfiles.find(p => p.id === myAssignment.receiver_id);
+                const receiverName = receiver?.user_profiles?.full_name || 'your recipient';
+                
+                content += `
+                    <div style="margin-top: 15px; padding: 15px; background: #f0fdf4; border: 2px solid var(--green); border-radius: 10px;">
+                        <h4 style="margin: 0 0 10px 0; color: var(--green);">🎅 Their Wishlist</h4>
+                        <p style="margin: 0 0 12px 0; color: #166534; font-size: 14px;">
+                            See what ${receiverName} would like!
+                        </p>
+                        <button onclick="openWishlist('${groupId}', '${myAssignment.receiver_id}', false)" class="btn" style="background: var(--green); color: white; width: 100%;">
+                            🎁 View ${receiverName}'s Wishlist
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
         // Add delete group button for creator at the bottom
         if (isCreator) {
             content += `
@@ -2216,6 +2257,217 @@ function initMusic() {
         }
     });
 }
+
+// ========================================
+// WISHLIST FEATURE
+// ========================================
+
+// Open Wishlist Modal
+async function openWishlist(groupId, participantId, isOwnWishlist = true) {
+    try {
+        // Store current context
+        window.currentWishlistContext = { groupId, participantId, isOwnWishlist };
+        
+        // Load wishlist items
+        await loadWishlistItems(groupId, participantId);
+        
+        // Update modal title
+        const modal = document.getElementById('wishlistModal');
+        const title = modal.querySelector('h2');
+        const infoText = modal.querySelector('.info-text');
+        
+        if (isOwnWishlist) {
+            title.textContent = '🎁 My Wishlist';
+            infoText.textContent = 'Add gift ideas for your Secret Santa to see!';
+            document.getElementById('addWishlistItemForm').parentElement.style.display = 'block';
+        } else {
+            // Get participant name
+            const { data: participant } = await supabase
+                .from('participants')
+                .select('user_id')
+                .eq('id', participantId)
+                .single();
+            
+            if (participant) {
+                const { data: profile } = await supabase
+                    .from('user_profiles')
+                    .select('full_name')
+                    .eq('id', participant.user_id)
+                    .single();
+                
+                const name = profile?.full_name || 'Unknown';
+                title.textContent = `🎁 ${name}'s Wishlist`;
+                infoText.textContent = `Gift ideas from your Secret Santa recipient!`;
+            }
+            // Hide add form when viewing someone else's wishlist
+            document.getElementById('addWishlistItemForm').parentElement.style.display = 'none';
+        }
+        
+        modal.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error opening wishlist:', error);
+        Toast.error('Error loading wishlist: ' + error.message);
+    }
+}
+
+// Load Wishlist Items
+async function loadWishlistItems(groupId, participantId) {
+    try {
+        const { data: items, error } = await supabase
+            .from('wishlists')
+            .select('*')
+            .eq('group_id', groupId)
+            .eq('participant_id', participantId)
+            .order('priority', { ascending: true })
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        const container = document.getElementById('wishlistItemsContainer');
+        
+        if (!items || items.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No items yet. Add your first gift idea above!</p>';
+            return;
+        }
+        
+        const isOwnWishlist = window.currentWishlistContext?.isOwnWishlist;
+        
+        let html = '<div style="display: flex; flex-direction: column; gap: 15px;">';
+        
+        items.forEach(item => {
+            const priorityLabels = {
+                1: '⭐ High Priority',
+                2: '⭐⭐ Medium',
+                3: '⭐⭐⭐ Low Priority'
+            };
+            
+            const priorityColors = {
+                1: '#dc2626',
+                2: '#f59e0b',
+                3: '#10b981'
+            };
+            
+            html += `
+                <div style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <h4 style="margin: 0; color: var(--red); font-size: 1.2em;">${item.item_name}</h4>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="background: ${priorityColors[item.priority]}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
+                                ${priorityLabels[item.priority]}
+                            </span>
+                            ${isOwnWishlist ? `
+                                <button onclick="deleteWishlistItem('${item.id}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9em;">
+                                    🗑️ Remove
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    ${item.item_description ? `<p style="color: #666; margin: 10px 0; line-height: 1.6;">${item.item_description}</p>` : ''}
+                    <div style="display: flex; gap: 15px; margin-top: 12px; flex-wrap: wrap;">
+                        ${item.item_url ? `<a href="${item.item_url}" target="_blank" style="color: #3b82f6; text-decoration: none; font-size: 0.95em;">🔗 View Item</a>` : ''}
+                        ${item.price_range ? `<span style="color: #10b981; font-weight: 600; font-size: 0.95em;">💰 ${item.price_range}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading wishlist items:', error);
+        Toast.error('Error loading wishlist items');
+    }
+}
+
+// Add Wishlist Item
+async function addWishlistItem() {
+    const context = window.currentWishlistContext;
+    if (!context) {
+        Toast.error('Wishlist context error');
+        return;
+    }
+    
+    const itemName = document.getElementById('wishlistItemName').value.trim();
+    const itemDescription = document.getElementById('wishlistItemDescription').value.trim();
+    const itemUrl = document.getElementById('wishlistItemUrl').value.trim();
+    const itemPrice = document.getElementById('wishlistItemPrice').value.trim();
+    const priority = parseInt(document.getElementById('wishlistItemPriority').value);
+    
+    if (!itemName) {
+        Toast.warning('Please enter a gift idea');
+        return;
+    }
+    
+    try {
+        const { error } = await supabase
+            .from('wishlists')
+            .insert([{
+                group_id: context.groupId,
+                participant_id: context.participantId,
+                item_name: itemName,
+                item_description: itemDescription || null,
+                item_url: itemUrl || null,
+                price_range: itemPrice || null,
+                priority: priority
+            }]);
+        
+        if (error) throw error;
+        
+        Toast.success(`"${itemName}" added to wishlist!`);
+        
+        // Clear form
+        document.getElementById('addWishlistItemForm').reset();
+        
+        // Reload items
+        await loadWishlistItems(context.groupId, context.participantId);
+        
+    } catch (error) {
+        console.error('Error adding wishlist item:', error);
+        if (error.code === '23505') {
+            Toast.error('This item is already in your wishlist');
+        } else {
+            Toast.error('Error adding item: ' + error.message);
+        }
+    }
+}
+
+// Delete Wishlist Item
+async function deleteWishlistItem(itemId) {
+    const confirmed = await Toast.confirm(
+        'Remove this item from your wishlist?',
+        'Remove Item?'
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+        const { error } = await supabase
+            .from('wishlists')
+            .delete()
+            .eq('id', itemId);
+        
+        if (error) throw error;
+        
+        Toast.success('Item removed from wishlist');
+        
+        // Reload items
+        const context = window.currentWishlistContext;
+        if (context) {
+            await loadWishlistItems(context.groupId, context.participantId);
+        }
+        
+    } catch (error) {
+        console.error('Error deleting wishlist item:', error);
+        Toast.error('Error removing item: ' + error.message);
+    }
+}
+
+// Make functions globally available for onclick
+window.openWishlist = openWishlist;
+window.addWishlistItem = addWishlistItem;
+window.deleteWishlistItem = deleteWishlistItem;
 
 // Make drawNames available globally for onclick
 window.drawNames = drawNames;

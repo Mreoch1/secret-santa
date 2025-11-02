@@ -238,6 +238,41 @@
         </div>
     </div>
 
+    <!-- Wishlist Modal -->
+    <div id="wishlistModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="modal-close">&times;</span>
+            <h2>🎁 My Wishlist</h2>
+            <p class="info-text">Add gift ideas for your Secret Santa to see!</p>
+            
+            <!-- Add Item Form -->
+            <div style="background: #f0fdf4; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid var(--green);">
+                <h3 style="margin-top: 0; color: var(--green);">➕ Add Gift Idea</h3>
+                <form id="addWishlistItemForm" onsubmit="event.preventDefault(); addWishlistItem();">
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="wishlistItemName" placeholder="Gift idea (e.g., 'Blue sweater')" required style="padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+                        <select id="wishlistItemPriority" style="padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+                            <option value="1">⭐ High Priority</option>
+                            <option value="2" selected>⭐⭐ Medium</option>
+                            <option value="3">⭐⭐⭐ Low Priority</option>
+                        </select>
+                    </div>
+                    <textarea id="wishlistItemDescription" placeholder="Optional: Add details, size, color, etc." style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 10px; min-height: 60px;"></textarea>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                        <input type="url" id="wishlistItemUrl" placeholder="Optional: Link to item" style="padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+                        <input type="text" id="wishlistItemPrice" placeholder="Price range" style="padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: 100%;">➕ Add to Wishlist</button>
+                </form>
+            </div>
+            
+            <!-- Wishlist Items -->
+            <div id="wishlistItemsContainer">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>🎄 Made with holiday cheer | Secret Santa 2025 🎅</p>
         <p style="margin-top: 10px; font-size: 0.9em;">
