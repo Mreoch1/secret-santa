@@ -1071,11 +1071,15 @@ async function drawNames(groupId) {
             // Send email notifications to all participants
             await sendDrawNotifications(assignments, participantsWithProfiles, group);
             
+            // Add delay to avoid rate limits (Resend free tier: 2 emails/second)
+            // Wait 2 seconds before sending creator receipt
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
             // Send creator receipt with all assignments
             await sendCreatorReceipt(assignments, participantsWithProfiles, group);
         }
         
-        Toast.success('🎉 Names drawn successfully!\n\nAll participants have been emailed their Secret Santa assignments!\n\nYou will also receive a master list via email for safekeeping.', 8000);
+        Toast.success('🎉 Names drawn successfully!\n\nEmails are being sent to all participants (may take 30-60 seconds for large groups).\n\nYou will receive a master list via email shortly!', 8000);
         Analytics.drawNames(participantsWithProfiles.length);
         
         // Close modal and reload groups
@@ -1151,6 +1155,12 @@ async function sendDrawNotifications(assignments, participants, group) {
                 console.error('❌ Failed to send to', giverName, result.error);
             }
             
+            // Add delay between emails to avoid rate limits (Resend free tier)
+            // Wait 1 second between each email
+            if (assignments.indexOf(assignment) < assignments.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            
         } catch (error) {
             emailsFailed++;
             console.error('Error sending email:', error);
@@ -1222,6 +1232,37 @@ async function sendCreatorReceipt(assignments, participants, group) {
             console.log('✅ Creator receipt sent successfully');
         } else {
             console.error('❌ Failed to send creator receipt:', result.error);
+            
+            // Check if it's a rate limit error
+            if (result.error?.statusCode === 429 || result.error?.name === 'rate_limit_exceeded') {
+                console.warn('⚠️ Rate limit hit - creator receipt will be retried in 5 seconds');
+                
+                // Retry after delay
+                setTimeout(async () => {
+                    try {
+                        console.log('🔄 Retrying creator receipt...');
+                        const retryResponse = await fetch(emailEndpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                from: 'Secret Santa <santa@holidaydrawnames.com>',
+                                to: [creatorEmail],
+                                subject: `📋 Secret Santa Master List - ${group.group_code} (For Your Records)`,
+                                html: emailHtml
+                            })
+                        });
+                        
+                        const retryResult = await retryResponse.json();
+                        if (retryResponse.ok && retryResult.success) {
+                            console.log('✅ Creator receipt sent on retry');
+                        } else {
+                            console.error('❌ Creator receipt retry also failed:', retryResult.error);
+                        }
+                    } catch (retryError) {
+                        console.error('Error retrying creator receipt:', retryError);
+                    }
+                }, 5000);
+            }
         }
         
     } catch (error) {
