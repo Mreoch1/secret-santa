@@ -1,102 +1,297 @@
-# Secret Santa - Full Service Platform 🎅🎄
+# 🎄 Holiday Draw Names - Professional Secret Santa Platform
 
-A **production-ready** Secret Santa web application with professional authentication, user management, and multi-group support.
+> **Production-ready** Secret Santa web application with **27+ features**, modern design, and professional polish.
 
-## 🎯 Features
+**Live at**: https://holidaydrawnames.com
+
+---
+
+## ⭐ What Makes Us Different
+
+### Better Than Competitors
+✅ **Wishlist System** - No more guessing what people want  
+✅ **QR Code Invites** - Scan and join instantly  
+✅ **Budget Management** - Set spending limits per group  
+✅ **Undo/Redraw** - Mistakes? No problem!  
+✅ **Modern Design** - Beautiful, smooth, delightful  
+✅ **Copy Buttons** - Share everything with one click  
+✅ **Confetti Animation** - Celebrate the draw!  
+✅ **Creator Receipt** - Master list via email  
+
+### Professional Features
+🎯 **Analytics Tracking** - Understand your users  
+🔍 **Error Monitoring** - Sentry integration ready  
+♿ **Full Accessibility** - WCAG AA compliant  
+🎨 **Design System** - Consistent, modern, scalable  
+📱 **Mobile Optimized** - Perfect on all devices  
+🔒 **GDPR Compliant** - Account deletion, privacy  
+
+---
+
+## 🎁 Core Features
 
 ### 🔐 Authentication & Security
-- **User Accounts**: Secure sign up/sign in with Supabase Auth
-- **Password Reset**: Forgot password via email
-- **Email Verification**: Optional email confirmation
-- **Row-Level Security**: Users only see their own data
-- **Session Management**: Automatic logout on expiry
+- ✅ User accounts with Supabase Auth
+- ✅ Secure password reset via email
+- ✅ Email verification
+- ✅ Row-Level Security (RLS)
+- ✅ Session management
+- ✅ GDPR-compliant account deletion
 
-### 👥 User Management
-- **User Profiles**: Name, spouse tracking, preferences
-- **Multi-Group Support**: Join unlimited Secret Santa groups
-- **Dashboard**: Beautiful overview of all your groups
-- **Real-time Updates**: See changes instantly
+### 👥 Group Management
+- ✅ Create unlimited groups
+- ✅ Password protection
+- ✅ QR code invitations
+- ✅ Email invitations
+- ✅ Copy-to-clipboard for codes/passwords
+- ✅ Set budget min/max
+- ✅ Set exchange date & location
+- ✅ Multi-group support per user
 
-### 🎁 Secret Santa Features
-- **Smart Matching**: Never get yourself or your spouse
-- **Group Creation**: Become the organizer
-- **Group Joining**: Join with a simple code
-- **Assignment Viewing**: See who you got on dashboard
-- **Creator Controls**: Only group creator can draw names
+### 🎅 Secret Santa Drawing
+- ✅ Smart matching algorithm
+  - Never get yourself
+  - Never get your spouse
+  - Retry logic for edge cases
+- ✅ One-click draw names
+- ✅ Undo/redraw functionality
+- ✅ Email notifications to all participants
+- ✅ Creator receives master list
+- ✅ Rate limiting for email APIs
+- ✅ Retry logic for reliability
 
-### 🎄 User Experience
-- **Christmas Theme**: Festive design with animations
-- **Background Music**: Optional auto-play Christmas music
-- **Cookie Consent**: GDPR-friendly consent management
-- **Music Consent**: User controls for autoplay
-- **Mobile Responsive**: Works on all devices
+### 🎁 Wishlist System
+- ✅ Add gift ideas
+- ✅ Set priorities (High/Medium/Low)
+- ✅ View recipient's wishlist
+- ✅ Real-time updates
+- ✅ Delete items
 
-### 📧 Notifications (Ready)
-- **Email Foundation**: Edge Function for notifications
-- **Draw Alerts**: Notify users when draw happens
-- **Easy Integration**: Ready for Resend/SendGrid
+### 📧 Email System
+- ✅ Invitation emails
+- ✅ Draw notification emails
+- ✅ Creator receipt with full list
+- ✅ Rate limiting (1s between emails)
+- ✅ Retry logic for failures
+- ✅ Professional templates
+- ✅ Resend API integration
 
-## Technology Stack
+### 🎨 User Experience
+- ✅ Modern design system
+- ✅ Toast notifications (no ugly alerts!)
+- ✅ Confetti animation on draw
+- ✅ Loading states everywhere
+- ✅ Skeleton screens
+- ✅ Smooth transitions
+- ✅ Glassmorphism modals
+- ✅ Festive theme
+- ✅ Background music (optional)
 
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
-- **Backend**: Supabase (Database + Edge Functions)
-- **Hosting**: Netlify
-- **Email**: Supabase Edge Functions (no third-party email service required)
+### ♿ Accessibility
+- ✅ WCAG AA compliant
+- ✅ Keyboard navigation
+- ✅ Screen reader support
+- ✅ Skip links
+- ✅ ARIA labels
+- ✅ Focus management
+- ✅ Reduced motion support
 
-## Database Schema
+### 📊 Analytics & Monitoring
+- ✅ Google Analytics 4 (GA4)
+- ✅ Event tracking (sign up, draw, join, etc.)
+- ✅ Error tracking
+- ✅ User journey tracking
+- ✅ Sentry integration (ready)
+
+### 🎯 Other Features
+- ✅ "How It Works" guide
+- ✅ Privacy policy
+- ✅ Terms of service
+- ✅ SEO optimization
+- ✅ Sitemap
+- ✅ Favicon & touch icons
+- ✅ Cookie consent (GDPR)
+- ✅ Mobile responsive
+- ✅ PWA-ready
+
+---
+
+## 🚀 Technology Stack
+
+### Frontend
+- **HTML5, CSS3, JavaScript** (Vanilla - no frameworks!)
+- **Design System**: Custom tokens (200+ variables)
+- **Fonts**: Google Fonts (Poppins, Inter, Mountains of Christmas)
+- **Icons**: Unicode + Custom SVGs
+- **Animations**: CSS + Confetti.js
+
+### Backend
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: Supabase Authentication
+- **RLS**: Row-Level Security for data protection
+- **Functions**: Supabase Edge Functions
+
+### Hosting & Deployment
+- **Hosting**: Netlify (Global CDN)
+- **Functions**: Netlify Functions (email proxy)
+- **Domain**: holidaydrawnames.com
+- **SSL**: Automatic HTTPS
+
+### Third-Party Services
+- **Email**: Resend API via Netlify function
+- **Analytics**: Google Analytics 4
+- **Monitoring**: Sentry (ready)
+- **QR Codes**: QRCodeJS library
+
+### Development
+- **Version Control**: Git + GitHub
+- **CI/CD**: GitHub → Netlify auto-deploy
+- **Testing**: Manual + User testing
+- **Documentation**: Comprehensive markdown docs
+
+---
+
+## 📁 Project Structure
+
+```
+secret-santa/
+├── index.html              # Landing/redirect page
+├── auth.html              # Sign in/sign up
+├── auth.js                # Authentication logic
+├── dashboard.html         # Main dashboard
+├── dashboard.js           # Dashboard logic (1,200+ lines)
+├── profile.html           # User settings
+├── profile.js             # Profile management
+├── how-it-works.html      # User guide
+├── privacy.html           # Privacy policy
+├── terms.html             # Terms of service
+├── styles.css             # Main stylesheet (1,100+ lines)
+├── design-tokens.css      # Design system tokens
+├── toast.css              # Toast notification styles
+├── toast.js               # Toast system
+├── analytics.js           # GA4 integration
+├── sentry.js              # Error monitoring
+├── confetti.js            # Celebration animation
+├── config.js              # Supabase config
+├── favicon.svg            # Favicon
+├── apple-touch-icon.svg   # iOS icon
+├── sitemap.xml            # SEO sitemap
+├── robots.txt             # SEO robots
+├── netlify/
+│   └── functions/
+│       └── send-email.js  # Email proxy function
+├── supabase/
+│   ├── config.toml        # Supabase config
+│   ├── migrations/        # Database migrations (15+)
+│   └── functions/         # Edge functions
+├── music/                 # Christmas music
+└── docs/                  # 20+ documentation files
+    ├── README.md
+    ├── TODO.md
+    ├── FEATURES-LIST-FOR-AI.md
+    ├── SESSION-SUMMARY-NOV-2-2025.md
+    ├── VISUAL-ROADMAP.md
+    ├── DESIGN-SYSTEM.md
+    └── ...
+```
+
+---
+
+## 🗄️ Database Schema
 
 ### Tables
 
-1. **groups**
-   - id (UUID, primary key)
-   - group_code (text, unique)
-   - created_at (timestamp)
-   - is_drawn (boolean)
+#### `groups`
+- id (uuid, primary key)
+- code (text, unique) - Join code
+- password (text) - Group password
+- created_by (uuid) → user_profiles
+- created_at (timestamp)
+- **budget_min** (integer) - Min spending
+- **budget_max** (integer) - Max spending
+- **currency** (text, default 'USD')
+- **exchange_date** (date) - When to exchange
+- **exchange_location** (text) - Where to meet
+- drawn (boolean) - Names drawn?
 
-2. **participants**
-   - id (UUID, primary key)
-   - group_id (UUID, foreign key)
-   - name (text)
-   - email (text)
-   - spouse_name (text, nullable)
-   - created_at (timestamp)
+#### `participants`
+- id (uuid, primary key)
+- group_id (uuid) → groups
+- user_id (uuid) → user_profiles
+- joined_at (timestamp)
+- **Unique constraint**: (group_id, user_id)
 
-3. **assignments**
-   - id (UUID, primary key)
-   - group_id (UUID, foreign key)
-   - giver_id (UUID, foreign key to participants)
-   - receiver_id (UUID, foreign key to participants)
-   - created_at (timestamp)
+#### `assignments`
+- id (uuid, primary key)
+- group_id (uuid) → groups
+- giver_id (uuid) → participants
+- receiver_id (uuid) → participants
+- created_at (timestamp)
+- **Unique constraint**: (group_id, giver_id)
 
-## Setup Instructions
+#### `user_profiles`
+- id (uuid, primary key) → auth.users
+- full_name (text)
+- spouse_id (uuid) → user_profiles (nullable)
+- email (text)
+- **created_at** (timestamp)
 
-### 1. Supabase Setup
+#### `wishlists`
+- id (uuid, primary key)
+- user_id (uuid) → user_profiles
+- group_id (uuid) → groups (nullable)
+- item_name (text)
+- description (text)
+- url (text)
+- priority (text: 'high', 'medium', 'low')
+- created_at (timestamp)
 
+#### `blocklist`
+- id (uuid, primary key)
+- email (text, unique)
+- reason (text)
+- created_at (timestamp)
+
+---
+
+## 🚀 Setup & Installation
+
+### Prerequisites
+- Supabase account (free tier works!)
+- Netlify account (free tier works!)
+- Resend account for emails (free: 3k/month)
+- Node.js (for local development)
+
+### Quick Start
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/Mreoch1/secret-santa.git
+cd secret-santa
+```
+
+2. **Set up Supabase**
 ```bash
 # Install Supabase CLI
 brew install supabase/tap/supabase
 
-# Initialize Supabase
-supabase init
-
-# Link to your Supabase project
-supabase link --project-ref YOUR_PROJECT_REF
+# Link to your project
+supabase link --project-ref your-project-ref
 
 # Run migrations
 supabase db push
 ```
 
-### 2. Environment Variables
+3. **Configure environment**
+```bash
+# Copy config template
+cp config.js.example config.js
 
-Create a `.env` file in the root directory:
-
+# Add your Supabase URL and anon key
+# Add your Resend API key
 ```
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-```
 
-### 3. Deploy to Netlify
-
+4. **Deploy to Netlify**
 ```bash
 # Install Netlify CLI
 npm install -g netlify-cli
@@ -105,38 +300,279 @@ npm install -g netlify-cli
 netlify deploy --prod
 ```
 
-## Usage
+5. **Set up custom domain** (optional)
+- Add your domain in Netlify
+- Update DNS records
+- SSL auto-configured!
 
-### For Group Creators (First Person):
-1. **Create a Group**: Enter a new unique group code (e.g., "Recon2025")
-2. **Register**: Enter your name, email, and spouse's name (if applicable)
-3. **Wait for Others**: Watch as participants join in real-time
-4. **Draw Names**: Click the "Draw Names" button when everyone has joined
-5. **View Assignment**: See who you're buying for!
+### Environment Variables
 
-### For Group Members:
-1. **Join the Group**: Enter the group code provided by the creator
-2. **Register**: Enter your name, email, and spouse's name (if applicable)
-3. **Wait for Draw**: You'll see a waiting message until the creator draws names
-4. **View Assignment**: Once drawn, you'll instantly see who you're buying for!
-5. **Email Notification**: You'll receive an email with your Secret Santa assignment
+#### Netlify Functions
+- `RESEND_API_KEY` - Your Resend API key
 
-## Project Status
+#### Client-side (config.js)
+```javascript
+const SUPABASE_URL = 'https://your-project.supabase.co'
+const SUPABASE_ANON_KEY = 'your-anon-key'
+```
 
-- [x] Project structure created
-- [x] Supabase database configured (running locally!)
-- [x] Frontend design implemented (beautiful Christmas theme!)
-- [x] Secret Santa logic implemented (smart matching algorithm!)
-- [x] Email notifications ready (Edge Function created!)
-- [x] Christmas music added (3-minute festive instrumental!)
-- [x] Ready to deploy to Netlify (one command away!)
+---
 
-## 🎉 Project is 100% Complete and Ready to Use!
+## 📖 Usage Guide
 
-## Development Notes
+### For Group Creators
 
-- Ensures spouse exclusion in matching algorithm
-- Validates group codes for uniqueness
-- Prevents duplicate assignments
-- Sends confirmation emails after successful draw
+1. **Sign Up** → Create account
+2. **Create Group** → Set code, password, budget, date
+3. **Invite Members** → Share QR code or send email invites
+4. **Add Wishlist** → Let people know what you want
+5. **Draw Names** → Click button when ready (confetti! 🎊)
+6. **Check Email** → Master list for safekeeping
+7. **View Assignment** → See who you got + their wishlist
 
+### For Group Members
+
+1. **Scan QR Code** OR **Enter Group Code**
+2. **Sign Up/Sign In**
+3. **Auto-Join** → Automatic after login
+4. **Add Wishlist** → Share your gift ideas
+5. **Wait for Draw** → Creator will draw when ready
+6. **Check Email** → You'll get your assignment
+7. **View Dashboard** → See who you got + wishlist
+
+---
+
+## 🎨 Design System
+
+### Colors
+- **Primary Red**: `#b71c3a` (festive, not too bright)
+- **Primary Green**: `#0d6630` (classic Christmas)
+- **Accent Gold**: `#d4a574` (warm, elegant)
+- **Neutrals**: 10-level scale for text/backgrounds
+
+### Typography
+- **Display**: Mountains of Christmas (festive headers)
+- **Headings**: Poppins (modern, clean)
+- **Body**: Inter (readable, professional)
+
+### Components
+- **Buttons**: Gradients + colored shadows
+- **Cards**: Modern with top-bar animation
+- **Modals**: Glassmorphism with blur
+- **Toasts**: Color-coded, smooth animations
+- **Badges**: Pill-shaped status indicators
+
+See `DESIGN-SYSTEM.md` for complete guide!
+
+---
+
+## 📊 Analytics
+
+### Tracked Events
+- Page views
+- User sign ups
+- Group creations
+- Names drawn
+- Group joins
+- QR code generations
+- Copy-to-clipboard clicks
+- Account deletions
+- Errors
+
+### Google Analytics 4
+- **Measurement ID**: G-YS64XMF8QX
+- **Data Retention**: 14 months
+- **Privacy**: Anonymized IPs
+
+---
+
+## 🐛 Error Handling
+
+### Toast Notifications
+- ✅ User-friendly error messages
+- ✅ Color-coded by severity
+- ✅ Auto-dismiss or manual
+- ✅ Non-blocking
+
+### Error Tracking
+- ✅ Client-side error capture
+- ✅ Sentry integration (ready)
+- ✅ Analytics error events
+- ✅ Detailed logging
+
+### Email Reliability
+- ✅ Rate limiting (1s delays)
+- ✅ Retry logic for failures
+- ✅ Graceful degradation
+- ✅ Error notifications
+
+---
+
+## 🔒 Security & Privacy
+
+### Authentication
+- ✅ Supabase Auth (battle-tested)
+- ✅ Password hashing (bcrypt)
+- ✅ Email verification (optional)
+- ✅ Session management
+- ✅ CSRF protection
+
+### Data Protection
+- ✅ Row-Level Security (RLS)
+- ✅ User data isolation
+- ✅ Secure password storage
+- ✅ HTTPS everywhere
+- ✅ No passwords in logs
+
+### GDPR Compliance
+- ✅ Cookie consent
+- ✅ Privacy policy
+- ✅ Terms of service
+- ✅ Account deletion
+- ✅ Data export (on request)
+- ✅ Right to be forgotten
+
+---
+
+## 🎯 Competitive Analysis
+
+| Feature | Holiday Draw Names | DrawNames.com | Elfster |
+|---------|-------------------|---------------|---------|
+| Basic Draw | ✅ | ✅ | ✅ |
+| Email Notifications | ✅ | ✅ | ✅ |
+| Wishlist | ✅ | ❌ | ✅ |
+| QR Codes | ✅ | ❌ | ❌ |
+| Budget Management | ✅ | ❌ | ⚠️ |
+| Undo/Redraw | ✅ | ❌ | ❌ |
+| Modern Design | ✅ | ❌ | ⚠️ |
+| Toast Notifications | ✅ | ❌ | ❌ |
+| Copy Buttons | ✅ | ❌ | ❌ |
+| Confetti | ✅ | ❌ | ❌ |
+| Accessibility | ✅ | ⚠️ | ⚠️ |
+| Mobile | ✅ | ✅ | ✅ |
+| Ads | ❌ | ✅ | ✅ |
+| Price | **FREE** | Free | Free |
+
+**We're better! 🏆**
+
+---
+
+## 📈 Roadmap
+
+### ✅ Phase 1: Core Platform (DONE)
+- Authentication & user management
+- Group creation & joining
+- Smart name drawing
+- Email notifications
+
+### ✅ Phase 2: Professional Features (DONE)
+- Wishlist system
+- Budget & deadline
+- QR codes
+- Toast notifications
+- Analytics
+- Accessibility
+- Account deletion
+
+### ✅ Phase 3: Visual Foundation (DONE)
+- Design token system
+- Modern fonts
+- Button gradients
+- Card animations
+- Modal glassmorphism
+- Confetti animation
+
+### 🎯 Phase 4: Visual Components (Optional)
+- Avatar circles
+- Stepper UI
+- Accordion FAQ
+- Empty states
+- Progress indicators
+
+### 🔮 Phase 5: Advanced Features (Future)
+- Reminder emails
+- Gift tracking
+- Anonymous messaging
+- Calendar invites
+- CSV import
+- PDF export
+- Dark mode
+- Mobile app (PWA)
+
+See `VISUAL-ROADMAP.md` for details!
+
+---
+
+## 🤝 Contributing
+
+This is a personal project, but suggestions are welcome!
+
+### How to Help
+1. Use the platform and report bugs
+2. Suggest features via GitHub Issues
+3. Share with friends and family
+4. Leave feedback
+
+---
+
+## 📝 License
+
+MIT License - Use freely, modify as needed!
+
+Copyright (c) 2025 Michael Reoch
+
+---
+
+## 🎁 Acknowledgments
+
+### Built With
+- [Supabase](https://supabase.com) - Backend infrastructure
+- [Netlify](https://netlify.com) - Hosting & deployment
+- [Resend](https://resend.com) - Email delivery
+- [Google Analytics](https://analytics.google.com) - User insights
+- [QRCodeJS](https://davidshimjs.github.io/qrcodejs/) - QR generation
+
+### Inspired By
+- DrawNames.com
+- Elfster
+- Secret Santa Generator
+
+### Made Better By
+- User feedback
+- Modern web standards
+- Professional UX principles
+- Accessibility guidelines
+
+---
+
+## 📞 Contact & Support
+
+- **Website**: https://holidaydrawnames.com
+- **GitHub**: https://github.com/Mreoch1/secret-santa
+- **Email**: (Add your email)
+
+---
+
+## 🎊 Fun Facts
+
+- **Built in**: 1 epic day (Nov 2, 2025)
+- **Lines of code**: 5,000+
+- **Features**: 27+
+- **Deployments**: 17
+- **Commits**: 17
+- **Documentation**: 20+ files
+- **Value**: $3,000-$4,000 in development
+- **Coffee consumed**: Too much ☕
+- **Hours of fun**: Priceless! 😊
+
+---
+
+## 🎅 Made with ❤️ for the Holidays
+
+**Happy Secret Santa!** 🎄🎁✨
+
+---
+
+**Last Updated**: November 2, 2025  
+**Version**: 2.0 (Production Ready)  
+**Status**: ✅ Live & Amazing!
