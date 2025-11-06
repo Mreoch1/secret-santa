@@ -194,8 +194,10 @@ header h1 {
 
 .tagline {
     font-size: 1.3em;
-    color: var(--cream);
+    color: white;
     font-weight: 300;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    opacity: 0.95;
 }
 
 /* Card Styles */
@@ -540,10 +542,23 @@ header h1 {
 footer {
     text-align: center;
     padding: 20px;
-    color: var(--cream);
+    color: white;
     font-size: 1.1em;
     position: relative;
     z-index: 1;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+footer a {
+    color: white;
+    text-decoration: underline;
+    opacity: 0.95;
+    transition: opacity 0.2s ease;
+}
+
+footer a:hover {
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(255,255,255,0.6);
 }
 
 /* Responsive Design */
@@ -1068,17 +1083,21 @@ footer {
     position: absolute;
     top: -40px;
     left: 0;
-    background: var(--primary-red);
+    background: #1c1917; /* Dark neutral for max contrast */
     color: white;
-    padding: 8px 16px;
+    padding: 12px 20px;
     text-decoration: none;
     z-index: 100;
     border-radius: 0 0 8px 0;
     font-weight: 600;
+    border: 2px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
 .skip-link:focus {
     top: 0;
+    outline: 3px solid var(--accent-gold);
+    outline-offset: 2px;
 }
 
 /* Focus Visible (Modern browsers) */
