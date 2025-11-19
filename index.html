@@ -19,6 +19,36 @@
     <link rel="canonical" href="https://holidaydrawnames.com">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Holiday Draw Names",
+        "url": "https://holidaydrawnames.com",
+        "logo": "https://holidaydrawnames.com/og-image.svg",
+        "description": "Free online Secret Santa organizer. Create groups, draw names automatically, and manage your holiday gift exchange.",
+        "sameAs": [],
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Service",
+            "url": "https://holidaydrawnames.com"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Holiday Draw Names",
+        "url": "https://holidaydrawnames.com",
+        "description": "Free online Secret Santa gift exchange organizer",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://holidaydrawnames.com?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="analytics.js"></script>
@@ -28,10 +58,20 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
             background: linear-gradient(135deg, #0f7c3a 0%, #c41e3a 100%);
             color: white;
+        }
+        .container {
+            max-width: 800px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         .loader {
             text-align: center;
@@ -48,16 +88,72 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        .content {
+            margin-top: 30px;
+            line-height: 1.8;
+            text-align: left;
+        }
+        .content h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        .content li {
+            margin-bottom: 8px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="loader">
-        <div class="spinner"></div>
-        <h2>🎄 Secret Santa 🎅</h2>
-        <p>Loading...</p>
+    <div class="container">
+        <div class="loader">
+            <div class="spinner"></div>
+            <h1>Secret Santa - Holiday Gift Exchange & Name Draw</h1>
+            <p>Loading your Secret Santa organizer...</p>
+        </div>
+        <div class="content" id="seo-content">
+            <h2>Organize Your Secret Santa Gift Exchange Online</h2>
+            <p>Welcome to Holiday Draw Names, the free and easy way to organize your Secret Santa gift exchange. Whether you're planning a holiday party with family, friends, or coworkers, our platform makes it simple to create groups, draw names automatically, and manage your gift exchange from start to finish.</p>
+            
+            <h2>How Secret Santa Works</h2>
+            <p>Secret Santa is a popular gift exchange tradition where participants randomly draw names to determine who they'll buy a gift for. The identity of the gift giver remains secret until the exchange takes place, adding an element of surprise and fun to the holiday season.</p>
+            
+            <h2>Features That Make Us Different</h2>
+            <ul>
+                <li><strong>Smart Name Drawing:</strong> Our algorithm ensures you never get yourself or your spouse, making the exchange fair and fun for everyone.</li>
+                <li><strong>Wishlist System:</strong> Share your gift ideas with your Secret Santa so they know exactly what you'd love to receive.</li>
+                <li><strong>QR Code Invites:</strong> Make joining your group as easy as scanning a code with your phone.</li>
+                <li><strong>Budget Management:</strong> Set spending limits to keep your gift exchange affordable and fair.</li>
+                <li><strong>Email Notifications:</strong> Automatic emails keep everyone informed about the draw and their assignments.</li>
+                <li><strong>Undo & Redraw:</strong> Made a mistake? No problem! You can undo and redraw names as needed.</li>
+            </ul>
+            
+            <h2>Getting Started</h2>
+            <p>To begin organizing your Secret Santa gift exchange, simply sign up for a free account. Once you're logged in, you can create a new group, set your budget and exchange date, and invite participants via email or QR code. When everyone has joined, you can draw names with a single click. All participants will receive an email with their assignment, and you'll get a master list for safekeeping.</p>
+            
+            <h2>Perfect for Any Group</h2>
+            <p>Our Secret Santa platform works great for family gatherings, office parties, friend groups, or any occasion where you want to exchange gifts. The system handles groups of any size, from small family exchanges to large company-wide events.</p>
+            
+            <p>Join thousands of users who trust Holiday Draw Names to make their holiday gift exchanges easy, organized, and fun. Get started today and make this year's Secret Santa the best one yet!</p>
+        </div>
     </div>
 
     <script>
+        // Hide content and show loader for users with JavaScript
+        document.getElementById('seo-content').style.display = 'none';
+        document.querySelector('.loader').style.display = 'block';
+        
         // Check authentication and redirect accordingly
         (async () => {
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
