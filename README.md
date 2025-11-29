@@ -107,7 +107,11 @@
 - ✅ "How It Works" guide
 - ✅ Privacy policy
 - ✅ Terms of service
-- ✅ SEO optimization
+- ✅ **SEO optimization** - 6 keyword-focused landing pages
+- ✅ **Breadcrumb navigation** - Standardized across all pages
+- ✅ **FAQPage schema** - JSON-LD on homepage and landing pages
+- ✅ **Canonical tags** - Proper URL canonicalization
+- ✅ **Internal linking** - Strong site structure for SEO
 - ✅ Sitemap
 - ✅ Favicon & touch icons
 - ✅ Cookie consent (GDPR)
@@ -155,28 +159,43 @@
 
 ```
 secret-santa/
-├── index.html              # Landing/redirect page
-├── auth.html              # Sign in/sign up
-├── auth.js                # Authentication logic
-├── dashboard.html         # Main dashboard
-├── dashboard.js           # Dashboard logic (1,200+ lines)
-├── profile.html           # User settings
-├── profile.js             # Profile management
-├── how-it-works.html      # User guide
-├── privacy.html           # Privacy policy
-├── terms.html             # Terms of service
-├── styles.css             # Main stylesheet (1,100+ lines)
-├── design-tokens.css      # Design system tokens
-├── toast.css              # Toast notification styles
-├── toast.js               # Toast system
-├── analytics.js           # GA4 integration
-├── sentry.js              # Error monitoring
-├── confetti.js            # Celebration animation
-├── config.js              # Supabase config
-├── favicon.svg            # Favicon
-├── apple-touch-icon.svg   # iOS icon
-├── sitemap.xml            # SEO sitemap
-├── robots.txt             # SEO robots
+├── index.html              # Homepage with SEO content
+├── home.js                 # Homepage redirect logic
+├── auth.html               # Sign in/sign up
+├── auth.js                 # Authentication logic
+├── dashboard.html           # Main dashboard
+├── dashboard.js            # Dashboard logic (1,200+ lines)
+├── profile.html            # User settings
+├── profile.js              # Profile management
+├── how-it-works.html       # User guide
+├── privacy.html            # Privacy policy
+├── terms.html              # Terms of service
+├── 404.html                # Error page
+├── toast-test.html         # Toast testing page
+├── styles.css              # Main stylesheet (1,200+ lines)
+├── design-tokens.css       # Design system tokens
+├── toast.css               # Toast notification styles
+├── toast.js                # Toast system
+├── analytics.js            # GA4 integration
+├── sentry.js               # Error monitoring
+├── confetti.js             # Celebration animation
+├── config.js               # Supabase config
+├── favicon.svg             # Favicon
+├── apple-touch-icon.svg    # iOS icon
+├── sitemap.xml             # SEO sitemap (includes all landing pages)
+├── robots.txt              # SEO robots
+├── secret-santa-generator/ # SEO landing page
+│   └── index.html
+├── christmas-name-draw/    # SEO landing page
+│   └── index.html
+├── holiday-name-picker/    # SEO landing page
+│   └── index.html
+├── random-name-generator/  # SEO landing page
+│   └── index.html
+├── office-secret-santa/    # SEO landing page
+│   └── index.html
+├── family-secret-santa/    # SEO landing page
+│   └── index.html
 ├── netlify/
 │   └── functions/
 │       └── send-email.js  # Email proxy function
@@ -184,8 +203,8 @@ secret-santa/
 │   ├── config.toml        # Supabase config
 │   ├── migrations/        # Database migrations (15+)
 │   └── functions/         # Edge functions
-├── music/                 # Christmas music
-└── docs/                  # 20+ documentation files
+├── music/                  # Christmas music
+└── docs/                   # 20+ documentation files
     ├── README.md
     ├── TODO.md
     ├── FEATURES-LIST-FOR-AI.md
@@ -366,6 +385,36 @@ See `DESIGN-SYSTEM.md` for complete guide!
 
 ---
 
+## 🔍 SEO & Search Optimization
+
+### Landing Pages
+- ✅ `/secret-santa-generator` - Main generator keyword
+- ✅ `/christmas-name-draw` - Christmas-specific intent
+- ✅ `/holiday-name-picker` - Holiday name selection
+- ✅ `/random-name-generator` - Random name tool
+- ✅ `/office-secret-santa` - Workplace use case
+- ✅ `/family-secret-santa` - Family use case
+
+### SEO Features
+- ✅ **Unique titles & meta descriptions** - Each page optimized for target keywords
+- ✅ **Breadcrumb navigation** - Standardized structure across all pages
+- ✅ **FAQPage JSON-LD** - Structured data on homepage and all landing pages
+- ✅ **Canonical tags** - Proper URL canonicalization
+- ✅ **Internal linking** - Strong site structure with homepage + 2+ links per page
+- ✅ **Sitemap.xml** - Includes all landing pages with proper priorities
+- ✅ **Optimized H1s** - Keyword-focused, unique per page
+- ✅ **Natural keyword usage** - Content optimized for search intent
+- ✅ **Non-blocking scripts** - Deferred loading for better crawlability
+
+### Technical SEO
+- ✅ Google Search Console verified
+- ✅ Mobile-friendly (responsive design)
+- ✅ Fast loading (deferred scripts, optimized assets)
+- ✅ Clean URL structure
+- ✅ Proper heading hierarchy
+
+---
+
 ## 📊 Analytics
 
 ### Tracked Events
@@ -482,14 +531,23 @@ See `DESIGN-SYSTEM.md` for complete guide!
 - Modal glassmorphism
 - Confetti animation
 
-### 🎯 Phase 4: Visual Components (Optional)
+### ✅ Phase 4: SEO Optimization (DONE)
+- 6 keyword-focused landing pages
+- Breadcrumb navigation system
+- FAQPage JSON-LD schema
+- Canonical tags
+- Enhanced homepage content
+- Internal linking structure
+- Updated sitemap
+
+### 🎯 Phase 5: Visual Components (Optional)
 - Avatar circles
 - Stepper UI
 - Accordion FAQ
 - Empty states
 - Progress indicators
 
-### 🔮 Phase 5: Advanced Features (Future)
+### 🔮 Phase 6: Advanced Features (Future)
 - Reminder emails
 - Gift tracking
 - Anonymous messaging
@@ -556,10 +614,12 @@ Copyright (c) 2025 Michael Reoch
 ## 🎊 Fun Facts
 
 - **Built in**: 1 epic day (Nov 2, 2025)
+- **SEO optimized**: January 2025
 - **Lines of code**: 5,000+
 - **Features**: 27+
-- **Deployments**: 17
-- **Commits**: 17
+- **SEO landing pages**: 6
+- **Deployments**: 20+
+- **Commits**: 20+
 - **Documentation**: 20+ files
 - **Value**: $3,000-$4,000 in development
 - **Coffee consumed**: Too much ☕
@@ -573,6 +633,6 @@ Copyright (c) 2025 Michael Reoch
 
 ---
 
-**Last Updated**: November 2, 2025  
-**Version**: 2.0 (Production Ready)  
+**Last Updated**: January 5, 2025  
+**Version**: 2.1 (SEO Optimized)  
 **Status**: ✅ Live & Amazing!
