@@ -23,10 +23,10 @@
     <link rel="stylesheet" href="toast.css">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7613712367456313"
      crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="analytics.js"></script>
-    <script src="sentry.js"></script>
-    <script src="toast.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="analytics.js" defer></script>
+    <script src="sentry.js" defer></script>
+    <script src="toast.js" defer></script>
 </head>
 <body>
     <!-- Skip Link for Accessibility -->
@@ -60,11 +60,26 @@
         <header>
             <h1>🎄 Secret Santa 🎅</h1>
             <p class="tagline">Spread Holiday Cheer with Your Family!</p>
+            <nav aria-label="Main navigation" style="margin-top:10px;">
+                <a href="/" style="color: var(--gold); text-decoration:none; margin-right:15px;">Home</a>
+                <a href="/dashboard.html" style="color: var(--gold); text-decoration:none; margin-right:15px;">Dashboard</a>
+                <a href="/how-it-works.html" style="color: var(--gold); text-decoration:none;">How It Works</a>
+            </nav>
             <p style="margin-top: 15px;">
                 <a href="/how-it-works.html" style="color: var(--gold); text-decoration: none; font-size: 1.1em; font-weight: 600; border: 2px solid var(--gold); padding: 8px 20px; border-radius: 20px; display: inline-block; transition: all 0.3s;">
                     ❓ How It Works
                 </a>
             </p>
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <ol class="breadcrumb__list">
+                    <li class="breadcrumb__item">
+                        <a href="/" class="breadcrumb__link">Home</a>
+                    </li>
+                    <li class="breadcrumb__item breadcrumb__current">
+                        <span aria-current="page">Sign In / Sign Up</span>
+                    </li>
+                </ol>
+            </nav>
         </header>
 
         <!-- Sign In Page -->
@@ -166,8 +181,8 @@
         </p>
     </footer>
 
-    <script src="config.js"></script>
-    <script src="auth.js"></script>
+    <script src="config.js" defer></script>
+    <script src="auth.js" defer></script>
 </body>
 </html>
 

@@ -124,7 +124,7 @@
 - [ ] Submit to Product Hunt
 - [ ] Share on Reddit
 - [ ] Create social media presence
-- [ ] SEO optimization
+- [x] SEO optimization (homepage content, internal linking, FAQ schema, and dedicated Secret Santa landing pages)
 - [ ] Google Search Console setup
 
 ---

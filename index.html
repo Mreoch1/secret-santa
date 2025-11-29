@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="KnOK8b7UF9v4k4K2ZU9ZN46FJEQlYpamkVrs2sCUs0A" />
-    <title>Secret Santa - Holiday Gift Exchange & Name Draw</title>
-    <meta name="description" content="Organize your Secret Santa gift exchange online! Create groups, draw names automatically, and manage your holiday gift giving with our free platform.">
+    <title>Free Secret Santa Name Generator | Draw Names Instantly</title>
+    <meta name="description" content="Free Secret Santa name generator to draw names instantly, manage groups, and run holiday gift exchanges for office, family, and school.">
     <meta name="keywords" content="secret santa, gift exchange, holiday gifts, name draw, christmas, family gifts">
     <meta property="og:title" content="Secret Santa - Holiday Gift Exchange">
     <meta property="og:description" content="Free online Secret Santa organizer. Create groups, draw names, and manage your holiday gift exchange.">
@@ -39,9 +39,11 @@
     {
         "@context": "https://schema.org",
         "@type": "WebSite",
+        "@id": "https://holidaydrawnames.com/#website",
         "name": "Holiday Draw Names",
         "url": "https://holidaydrawnames.com",
-        "description": "Free online Secret Santa gift exchange organizer",
+        "description": "Free Secret Santa name generator and holiday gift exchange organizer for office, family, and school groups.",
+        "inLanguage": "en",
         "potentialAction": {
             "@type": "SearchAction",
             "target": "https://holidaydrawnames.com?q={search_term_string}",
@@ -49,11 +51,60 @@
         }
     }
     </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Is your Secret Santa name generator really free?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, Holiday Draw Names is a free Secret Santa generator for office, family, and school groups with no hidden fees or paywalls."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I redo the holiday name draw if something changes?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, organizers can undo and rerun the holiday name draw if someone joins late or you need to adjust blocklists."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Does everyone need an account to join the Secret Santa?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Participants create a simple account so they can join groups, manage wishlists, and see their Secret Santa assignment securely."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What if someone forgets who they drew?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "They can log back into their dashboard anytime to see their assignment, and organizers keep a backup master list."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I run multiple Secret Santa groups at once?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, you can join or create multiple groups, making it easy to manage an office Secret Santa, a family exchange, and a school event from a single account."
+                }
+            }
+        ]
+    }
+    </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7613712367456313"
      crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
-    <script src="analytics.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="config.js" defer></script>
+    <script src="analytics.js" defer></script>
+    <script src="home.js" defer></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -110,6 +161,26 @@
         .content li {
             margin-bottom: 8px;
         }
+        .main-nav {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .main-nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 500;
+        }
+        .main-nav a:hover {
+            text-decoration: underline;
+        }
+        .seo-links ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .seo-links li::before {
+            content: "• ";
+        }
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -119,17 +190,51 @@
 </head>
 <body>
     <div class="container">
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="/">Home</a>
+            <a href="/auth.html">Get Started</a>
+            <a href="/how-it-works.html">How It Works</a>
+            <a href="/secret-santa-generator">Secret Santa Generator</a>
+            <a href="/christmas-name-draw">Christmas Name Draw</a>
+        </nav>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol class="breadcrumb__list">
+                <li class="breadcrumb__item">
+                    <a href="/" class="breadcrumb__link">Home</a>
+                </li>
+                <li class="breadcrumb__item breadcrumb__current">
+                    <span aria-current="page">Secret Santa Name Generator</span>
+                </li>
+            </ol>
+        </nav>
         <div class="loader">
             <div class="spinner"></div>
-            <h1>Secret Santa - Holiday Gift Exchange & Name Draw</h1>
+            <h1>Free Secret Santa Name Generator & Holiday Gift Exchange</h1>
             <p>Loading your Secret Santa organizer...</p>
         </div>
         <div class="content" id="seo-content">
             <h2>Organize Your Secret Santa Gift Exchange Online</h2>
+            <figure style="text-align:center; margin-bottom:20px;">
+                <img src="/og-image.svg" alt="Hero illustration showing an online Secret Santa name generator drawing names" style="max-width:100%; height:auto;">
+                <figcaption style="font-size:0.9em; color:#f0f0f0; margin-top:8px;">Use our Secret Santa name generator to draw names instantly for any holiday group.</figcaption>
+            </figure>
             <p>Welcome to Holiday Draw Names, the free and easy way to organize your Secret Santa gift exchange. Whether you're planning a holiday party with family, friends, or coworkers, our platform makes it simple to create groups, draw names automatically, and manage your gift exchange from start to finish.</p>
             
             <h2>How Secret Santa Works</h2>
             <p>Secret Santa is a popular gift exchange tradition where participants randomly draw names to determine who they'll buy a gift for. The identity of the gift giver remains secret until the exchange takes place, adding an element of surprise and fun to the holiday season.</p>
+            
+            <h2>How Our Secret Santa Name Generator Works</h2>
+            <ol>
+                <li><strong>Create your group:</strong> Start a free group for your office, family, or school event.</li>
+                <li><strong>Invite everyone:</strong> Share a link, QR code, or group code so people can join.</li>
+                <li><strong>Set details:</strong> Choose your gift budget, exchange date, and any special notes.</li>
+                <li><strong>Run the holiday name draw:</strong> Our smart <strong>secret santa generator</strong> pairs everyone while avoiding blocked matches.</li>
+                <li><strong>Send assignments:</strong> Each person gets a private email with their recipient and wishlist.</li>
+            </ol>
+            <figure style="text-align:center; margin:20px 0;">
+                <img src="/og-image.svg" alt="Simple step-by-step diagram showing how to create a group, invite friends, and run a holiday name draw online" style="max-width:100%; height:auto;">
+                <figcaption style="font-size:0.9em; color:#f0f0f0; margin-top:8px;">A simple diagram of the Secret Santa draw names flow from group creation to email assignments.</figcaption>
+            </figure>
             
             <h2>Features That Make Us Different</h2>
             <ul>
@@ -145,31 +250,49 @@
             <p>To begin organizing your Secret Santa gift exchange, simply sign up for a free account. Once you're logged in, you can create a new group, set your budget and exchange date, and invite participants via email or QR code. When everyone has joined, you can draw names with a single click. All participants will receive an email with their assignment, and you'll get a master list for safekeeping.</p>
             
             <h2>Perfect for Any Group</h2>
-            <p>Our Secret Santa platform works great for family gatherings, office parties, friend groups, or any occasion where you want to exchange gifts. The system handles groups of any size, from small family exchanges to large company-wide events.</p>
+            <p>Our Secret Santa platform works great for family gatherings, office parties, friend groups, school classrooms, or any occasion where you want to exchange gifts. The system handles groups of any size, from small family exchanges to large company-wide events.</p>
+            
+            <h2>Use Cases: Office, Family, and School</h2>
+            <h3>Office Secret Santa</h3>
+            <p>Use our <a href="/office-secret-santa">office Secret Santa generator</a> to set budgets, dates, and locations so coworkers know exactly how your holiday name draw will run.</p>
+
+            <h3>Family Secret Santa</h3>
+            <p>For big family gatherings, the <a href="/family-secret-santa">family Secret Santa</a> flow lets you block couples, manage multiple households, and run a private <strong>holiday name draw</strong> that feels fair to everyone.</p>
+
+            <h3>School or Classroom Secret Santa</h3>
+            <p>Teachers and organizers can safely manage classroom exchanges, using wishlists and clear budgets so the <strong>secret santa draw names</strong> experience stays fun and age appropriate.</p>
+
+            <div class="seo-links">
+                <h2>Helpful Secret Santa Tools</h2>
+                <ul>
+                    <li><a href="/secret-santa-generator">Secret Santa Name Generator</a></li>
+                    <li><a href="/christmas-name-draw">Christmas Name Draw</a></li>
+                    <li><a href="/holiday-name-picker">Holiday Name Picker</a></li>
+                    <li><a href="/random-name-generator">Random Name Generator</a></li>
+                    <li><a href="/office-secret-santa">Office Secret Santa</a></li>
+                    <li><a href="/family-secret-santa">Family Secret Santa</a></li>
+                </ul>
+            </div>
+
+            <h2>Secret Santa Name Generator FAQ</h2>
+            <h3>Is your Secret Santa name generator really free?</h3>
+            <p>Yes, Holiday Draw Names is a free <strong>secret santa generator</strong> for office, family, and school groups. There are no hidden fees or paywalls.</p>
+
+            <h3>Can I redo the holiday name draw if something changes?</h3>
+            <p>Yes, organizers can undo and rerun the <strong>holiday name draw</strong> if someone joins late or you need to adjust blocklists.</p>
+
+            <h3>Does everyone need an account to join the Secret Santa?</h3>
+            <p>Participants create a simple account so they can join groups, manage wishlists, and see their Secret Santa assignment securely.</p>
+
+            <h3>What if someone forgets who they drew?</h3>
+            <p>They can log back into their dashboard anytime to see their assignment, and organizers keep a backup master list.</p>
+
+            <h3>Can I run multiple Secret Santa groups at once?</h3>
+            <p>Yes, you can join or create multiple groups, making it easy to manage an office Secret Santa, a family exchange, and a school event from one account.</p>
             
             <p>Join thousands of users who trust Holiday Draw Names to make their holiday gift exchanges easy, organized, and fun. Get started today and make this year's Secret Santa the best one yet!</p>
         </div>
     </div>
 
-    <script>
-        // Hide content and show loader for users with JavaScript
-        document.getElementById('seo-content').style.display = 'none';
-        document.querySelector('.loader').style.display = 'block';
-        
-        // Check authentication and redirect accordingly
-        (async () => {
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (session) {
-                // User is logged in - go to dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                // Not logged in - go to auth page
-                window.location.href = 'auth.html';
-            }
-        })();
-    </script>
 </body>
 </html>

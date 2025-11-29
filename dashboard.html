@@ -8,6 +8,7 @@
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+    <link rel="canonical" href="https://holidaydrawnames.com/dashboard.html">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,12 +17,12 @@
     <link rel="stylesheet" href="toast.css">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7613712367456313"
      crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="analytics.js"></script>
-    <script src="sentry.js"></script>
-    <script src="toast.js"></script>
-    <script src="confetti.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+    <script src="analytics.js" defer></script>
+    <script src="sentry.js" defer></script>
+    <script src="toast.js" defer></script>
+    <script src="confetti.js" defer></script>
 </head>
 <body>
     <!-- Skip Link for Accessibility -->
@@ -63,6 +64,16 @@
         <header>
             <h1>🎄 Secret Santa 🎅</h1>
             <p class="tagline">Your Holiday Gift Exchange Dashboard</p>
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <ol class="breadcrumb__list">
+                    <li class="breadcrumb__item">
+                        <a href="/" class="breadcrumb__link">Home</a>
+                    </li>
+                    <li class="breadcrumb__item breadcrumb__current">
+                        <span aria-current="page">Dashboard</span>
+                    </li>
+                </ol>
+            </nav>
         </header>
 
         <!-- Dashboard Page -->
@@ -355,9 +366,9 @@
         </p>
     </footer>
 
-    <script src="config.js"></script>
-    <script src="dashboard-production.js"></script>
-    <script src="dashboard.js"></script>
+    <script src="config.js" defer></script>
+    <script src="dashboard-production.js" defer></script>
+    <script src="dashboard.js" defer></script>
 </body>
 </html>
 

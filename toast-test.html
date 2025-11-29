@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toast Testing Page</title>
+    <link rel="canonical" href="https://holidaydrawnames.com/toast-test.html">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="toast.css">
     <style>
@@ -33,9 +34,25 @@
             background: #a01729;
         }
     </style>
-    <script src="toast.js"></script>
+    <script src="toast.js" defer></script>
 </head>
 <body>
+    <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-bottom:15px;">
+        <ol class="breadcrumb__list">
+            <li class="breadcrumb__item">
+                <a href="/" class="breadcrumb__link">Home</a>
+            </li>
+            <li class="breadcrumb__item breadcrumb__current">
+                <span aria-current="page">Toast Test</span>
+            </li>
+        </ol>
+    </nav>
+    <nav aria-label="Main navigation" style="margin-bottom:15px;">
+        <a href="/" style="margin-right:10px;">Home</a>
+        <a href="/auth.html" style="margin-right:10px;">Auth</a>
+        <a href="/dashboard.html" style="margin-right:10px;">Dashboard</a>
+        <a href="/how-it-works.html">How It Works</a>
+    </nav>
     <h1>🎨 Toast Notification Testing</h1>
     <p>Click the buttons below to test different toast types:</p>
     

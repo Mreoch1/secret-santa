@@ -323,6 +323,40 @@ header h1 {
     line-height: 1.6;
 }
 
+/* Breadcrumbs */
+.breadcrumb {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.breadcrumb__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    align-items: center;
+}
+
+.breadcrumb__item {
+    color: inherit;
+}
+
+.breadcrumb__link {
+    color: var(--gold, #ffd700);
+    text-decoration: none;
+}
+
+.breadcrumb__link:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb__current span[aria-current="page"] {
+    font-weight: 600;
+}
+
 /* Page Management */
 .page {
     display: none;
