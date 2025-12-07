@@ -18,7 +18,7 @@ const RESEND_API_KEY = '';
 // Site URL
 const SITE_URL = isDevelopment
   ? 'http://localhost:8000'
-  : 'https://holidaydrawnames.com';
+  : 'https://holidaydrawnames.netlify.app';
 
 // Supabase client is loaded via CDN in index.html
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
