@@ -2088,7 +2088,7 @@ function displayInviteList(invites, participants, group) {
         listHtml += `
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
                 <div style="flex: 1;">
-                    <span style="color: white; font-weight: 500;">${invite.email}</span>
+                    <span style="color: var(--neutral-800); font-weight: 500;">${invite.email}</span>
                     <br>
                     <small style="color: #9ca3af;">Sent ${new Date(invite.sent_at).toLocaleDateString()}</small>
                 </div>

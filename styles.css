@@ -213,6 +213,23 @@ header h1 {
     transition: all var(--duration-normal) var(--ease-smooth);
     position: relative;
     overflow: hidden;
+    color: var(--neutral-800);
+}
+
+/* Ensure all text in cards is dark and visible (unless explicitly styled) */
+.card p,
+.card span:not(.group-status):not(.badge),
+.card div:not(.group-status):not(.group-assignment):not(.badge) {
+    color: var(--neutral-700);
+}
+
+.card ul,
+.card ol {
+    color: var(--neutral-700);
+}
+
+.card li {
+    color: var(--neutral-700);
 }
 
 .card::before {
@@ -867,6 +884,22 @@ footer a:hover {
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    color: var(--neutral-800);
+}
+
+/* Ensure all text in group cards is dark and visible */
+.group-card * {
+    color: inherit;
+}
+
+.group-card p,
+.group-card span,
+.group-card div:not(.group-status):not(.group-assignment) {
+    color: var(--neutral-700);
+}
+
+.group-card .group-status {
+    /* Status badges have their own colors */
 }
 
 .group-card::before {
@@ -944,6 +977,7 @@ footer a:hover {
 .group-assignment p {
     margin: 5px 0;
     font-size: 0.95em;
+    color: var(--neutral-700);
 }
 
 .group-assignment .receiver {
@@ -956,7 +990,12 @@ footer a:hover {
 .empty-state {
     text-align: center;
     padding: 60px 20px;
-    color: #666;
+    color: var(--neutral-700);
+}
+
+.empty-state p {
+    color: var(--neutral-600);
+    font-size: var(--text-base);
 }
 
 .empty-state h3 {
