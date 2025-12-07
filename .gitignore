@@ -11,6 +11,7 @@ node_modules/
 
 # Supabase
 .supabase/
+supabase/.temp/
 
 # Netlify
 .netlify/
