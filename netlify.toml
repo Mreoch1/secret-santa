@@ -12,7 +12,16 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Headers for security
+# Headers for security and proper content types
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Content-Type = "text/html; charset=UTF-8"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer-when-downgrade"
+
 [[headers]]
   for = "/*"
   [headers.values]
