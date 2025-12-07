@@ -62,14 +62,16 @@
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <div class="container" id="main-content">
-        <header style="text-align:center; margin-bottom:30px;">
-            <h1 class="brand-title"><span class="brand-gradient">Free Secret Santa Name Generator</span></h1>
-            <p class="tagline" style="margin-top:10px;">Draw Secret Santa names instantly for any group.</p>
+        <header style="text-align:center; margin-bottom:var(--space-8);">
+            <h1 class="brand-title" style="font-size:var(--text-4xl); font-family:var(--font-display); color:white; margin-bottom:var(--space-4); text-shadow:2px 2px 8px rgba(0,0,0,0.3);">
+                <span class="brand-gradient">Free Secret Santa Name Generator</span>
+            </h1>
+            <p class="tagline" style="margin-top:var(--space-4); font-size:var(--text-xl); color:rgba(255,255,255,0.95); font-weight:var(--font-weight-medium);">Draw Secret Santa names instantly for any group.</p>
 
-            <nav aria-label="Main navigation" style="margin-top:15px;">
-                <a href="/" style="margin:0 10px; color:white; text-decoration:none;">Home</a>
-                <a href="/auth.html" style="margin:0 10px; color:white; text-decoration:none;">Get Started</a>
-                <a href="/how-it-works.html" style="margin:0 10px; color:white; text-decoration:none;">How It Works</a>
+            <nav aria-label="Main navigation" style="margin-top:var(--space-6); display:flex; flex-wrap:wrap; justify-content:center; gap:var(--space-3);">
+                <a href="/" class="nav-link-landing" style="padding:var(--space-2) var(--space-4); color:white; text-decoration:none; background:rgba(255,255,255,0.15); border-radius:var(--radius-md); border:1px solid rgba(255,255,255,0.2); transition:all var(--duration-normal) var(--ease-smooth); font-weight:var(--font-weight-medium);">Home</a>
+                <a href="/auth.html" class="nav-link-landing" style="padding:var(--space-2) var(--space-4); color:white; text-decoration:none; background:rgba(255,255,255,0.15); border-radius:var(--radius-md); border:1px solid rgba(255,255,255,0.2); transition:all var(--duration-normal) var(--ease-smooth); font-weight:var(--font-weight-medium);">Get Started</a>
+                <a href="/how-it-works.html" class="nav-link-landing" style="padding:var(--space-2) var(--space-4); color:white; text-decoration:none; background:rgba(255,255,255,0.15); border-radius:var(--radius-md); border:1px solid rgba(255,255,255,0.2); transition:all var(--duration-normal) var(--ease-smooth); font-weight:var(--font-weight-medium);">How It Works</a>
             </nav>
 
             <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -112,15 +114,15 @@
                 </ul>
             </section>
 
-            <section class="card">
-                <h2>More Holiday Draw Name Tools</h2>
-                <p>Looking for other ways to run your holiday name draw? Try these focused pages:</p>
-                <ul>
-                    <li><a href="/christmas-name-draw">Christmas Name Draw</a></li>
-                    <li><a href="/holiday-name-picker">Holiday Name Picker</a></li>
-                    <li><a href="/random-name-generator">Random Name Generator</a></li>
-                    <li><a href="/office-secret-santa">Office Secret Santa Generator</a></li>
-                    <li><a href="/family-secret-santa">Family Secret Santa</a></li>
+            <section class="card" style="background:var(--festive-light-green); border:2px dashed var(--primary-green);">
+                <h2 style="color:var(--primary-green);">More Holiday Draw Name Tools</h2>
+                <p style="color:var(--neutral-700); margin-bottom:var(--space-4);">Looking for other ways to run your holiday name draw? Try these focused pages:</p>
+                <ul style="list-style:none; padding:0; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:var(--space-3);">
+                    <li><a href="/christmas-name-draw" style="display:block; padding:var(--space-3); background:white; border-radius:var(--radius-md); color:var(--primary-green); text-decoration:none; font-weight:var(--font-weight-medium); transition:all var(--duration-normal) var(--ease-smooth); border:2px solid transparent;">Christmas Name Draw</a></li>
+                    <li><a href="/holiday-name-picker" style="display:block; padding:var(--space-3); background:white; border-radius:var(--radius-md); color:var(--primary-green); text-decoration:none; font-weight:var(--font-weight-medium); transition:all var(--duration-normal) var(--ease-smooth); border:2px solid transparent;">Holiday Name Picker</a></li>
+                    <li><a href="/random-name-generator" style="display:block; padding:var(--space-3); background:white; border-radius:var(--radius-md); color:var(--primary-green); text-decoration:none; font-weight:var(--font-weight-medium); transition:all var(--duration-normal) var(--ease-smooth); border:2px solid transparent;">Random Name Generator</a></li>
+                    <li><a href="/office-secret-santa" style="display:block; padding:var(--space-3); background:white; border-radius:var(--radius-md); color:var(--primary-green); text-decoration:none; font-weight:var(--font-weight-medium); transition:all var(--duration-normal) var(--ease-smooth); border:2px solid transparent;">Office Secret Santa Generator</a></li>
+                    <li><a href="/family-secret-santa" style="display:block; padding:var(--space-3); background:white; border-radius:var(--radius-md); color:var(--primary-green); text-decoration:none; font-weight:var(--font-weight-medium); transition:all var(--duration-normal) var(--ease-smooth); border:2px solid transparent;">Family Secret Santa</a></li>
                 </ul>
             </section>
             <section class="card">
@@ -131,9 +133,9 @@
             </section>
         </main>
 
-        <footer style="text-align:center; margin-top:30px; color:white;">
-            <p>Back to <a href="/" style="color:var(--gold);">homepage</a> or explore the
-                <a href="/how-it-works.html" style="color:var(--gold);">How It Works guide</a>.
+        <footer style="text-align:center; margin-top:var(--space-10); padding:var(--space-6); color:white; background:rgba(255,255,255,0.1); border-radius:var(--radius-lg); backdrop-filter:blur(8px);">
+            <p style="margin:0; font-size:var(--text-base);">Back to <a href="/" style="color:var(--accent-gold); text-decoration:none; font-weight:var(--font-weight-semibold); border-bottom:2px solid transparent; transition:all var(--duration-normal) var(--ease-smooth);">homepage</a> or explore the
+                <a href="/how-it-works.html" style="color:var(--accent-gold); text-decoration:none; font-weight:var(--font-weight-semibold); border-bottom:2px solid transparent; transition:all var(--duration-normal) var(--ease-smooth);">How It Works guide</a>.
             </p>
         </footer>
     </div>
