@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="KnOK8b7UF9v4k4K2ZU9ZN46FJEQlYpamkVrs2sCUs0A" />
     <title>Profile Settings - Secret Santa</title>
-    <meta name="description" content="Update your Secret Santa profile settings including your name and spouse information.">
+    <meta name="description" content="Update your Secret Santa profile settings including your name and spouse information. Manage your account preferences and privacy settings.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta property="og:title" content="Profile Settings - Secret Santa">
+    <meta property="og:description" content="Update your Secret Santa profile settings and manage your account.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://holidaydrawnames.com/profile.html">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
     <link rel="canonical" href="https://holidaydrawnames.com/profile.html">
@@ -16,12 +21,12 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="toast.css">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7613712367456313"
-     crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-    <script src="config.js" defer></script>
-    <script src="analytics.js" defer></script>
-    <script src="sentry.js" defer></script>
-    <script src="toast.js" defer></script>
+     crossorigin="anonymous" onerror="console.warn('Ad script failed to load');"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="console.error('Failed to load Supabase');"></script>
+    <script src="config.js" defer onerror="console.error('Failed to load config.js - profile will not work');"></script>
+    <script src="analytics.js" defer onerror="console.warn('Analytics failed to load');"></script>
+    <script src="sentry.js" defer onerror="console.warn('Sentry failed to load');"></script>
+    <script src="toast.js" defer onerror="console.error('Toast failed to load');"></script>
 </head>
 <body>
     <!-- Skip Link for Accessibility -->
@@ -67,14 +72,14 @@
             <form id="profileForm">
                 <div class="form-group">
                     <label for="fullName">Full Name *</label>
-                    <input type="text" id="fullName" placeholder="e.g., Michael Reoch" required>
-                    <small>This is how your name will appear in Secret Santa groups</small>
+                    <input type="text" id="fullName" placeholder="e.g., Michael Reoch" required autocomplete="name" aria-describedby="profile-name-help">
+                    <small id="profile-name-help">This is how your name will appear in Secret Santa groups</small>
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email (Read-only)</label>
-                    <input type="email" id="email" disabled>
-                    <small>Email cannot be changed</small>
+                    <input type="email" id="email" disabled aria-describedby="profile-email-help">
+                    <small id="profile-email-help">Email cannot be changed. Contact support if you need to update your email address.</small>
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%;">

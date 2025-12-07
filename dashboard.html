@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secret Santa Dashboard - Manage Your Gift Exchange</title>
-    <meta name="description" content="Manage your Secret Santa groups, send invitations, and draw names for your holiday gift exchange.">
+    <meta name="description" content="Manage your Secret Santa groups, send invitations, draw names, and organize your holiday gift exchange. View assignments, manage wishlists, and track your groups.">
     <meta name="robots" content="noindex, nofollow">
+    <meta property="og:title" content="Secret Santa Dashboard - Manage Your Gift Exchange">
+    <meta property="og:description" content="Manage your Secret Santa groups, send invitations, and draw names for your holiday gift exchange.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://holidaydrawnames.com/dashboard.html">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
     <link rel="canonical" href="https://holidaydrawnames.com/dashboard.html">
@@ -131,14 +135,14 @@
                 <form id="joinGroupForm">
                     <div class="form-group">
                         <label for="groupCode">Group Code</label>
-                        <input type="text" id="groupCode" placeholder="e.g., Family2025" required>
-                        <small>Case-insensitive, no spaces</small>
+                        <input type="text" id="groupCode" placeholder="e.g., Family2025" required autocomplete="off" aria-describedby="group-code-help" aria-required="true">
+                        <small id="group-code-help">Case-insensitive, no spaces</small>
                     </div>
                     
                     <div class="form-group">
                         <label for="groupPassword">Group Password</label>
-                        <input type="password" id="groupPassword" placeholder="Enter password" required>
-                        <small>🔒 This keeps your group private</small>
+                        <input type="password" id="groupPassword" placeholder="Enter password" required autocomplete="current-password" aria-describedby="group-password-help" aria-required="true">
+                        <small id="group-password-help">🔒 This keeps your group private</small>
                     </div>
                     
                     <button type="submit" class="btn btn-primary">Join Group 🎄</button>
@@ -157,19 +161,20 @@
                 <form id="createGroupForm">
                     <div class="form-group">
                         <label for="newGroupCode">Group Code</label>
-                        <input type="text" id="newGroupCode" placeholder="e.g., Family2025" required>
-                        <small>Make it unique and easy to remember!</small>
+                        <input type="text" id="newGroupCode" placeholder="e.g., Family2025" required autocomplete="off" aria-describedby="new-group-code-help" aria-required="true">
+                        <small id="new-group-code-help">Make it unique and easy to remember!</small>
                     </div>
                     
                     <div class="form-group">
                         <label for="newGroupPassword">Group Password</label>
-                        <input type="password" id="newGroupPassword" placeholder="Create a password" required minlength="4">
-                        <small>🔒 Minimum 4 characters - share this with your group members!</small>
+                        <input type="password" id="newGroupPassword" placeholder="Create a password" required minlength="4" autocomplete="new-password" aria-describedby="new-group-password-help" aria-required="true">
+                        <small id="new-group-password-help">🔒 Minimum 4 characters - share this with your group members!</small>
                     </div>
                     
                     <div class="form-group">
                         <label for="confirmGroupPassword">Confirm Password</label>
-                        <input type="password" id="confirmGroupPassword" placeholder="Re-enter password" required minlength="4">
+                        <input type="password" id="confirmGroupPassword" placeholder="Re-enter password" required minlength="4" autocomplete="new-password" aria-describedby="confirm-password-help" aria-required="true">
+                        <small id="confirm-password-help">Re-enter the password to confirm</small>
                     </div>
                     
                     <div style="border-top: 2px dashed #ddd; margin: 20px 0; padding-top: 20px;">
@@ -271,13 +276,14 @@
                 <form id="sendInvitesForm">
                     <div class="form-group">
                         <label for="inviteEmails">Email Addresses</label>
-                        <textarea id="inviteEmails" rows="5" placeholder="Enter email addresses (one per line)&#10;friend@example.com&#10;family@example.com&#10;colleague@example.com" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; font-family: inherit;"></textarea>
-                        <small>Enter email addresses of people you want to invite</small>
+                        <textarea id="inviteEmails" rows="5" placeholder="Enter email addresses (one per line)&#10;friend@example.com&#10;family@example.com&#10;colleague@example.com" required aria-describedby="invite-emails-help" aria-required="true" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; font-family: inherit;"></textarea>
+                        <small id="invite-emails-help">Enter email addresses of people you want to invite (one per line)</small>
                     </div>
                     
                     <div class="form-group">
                         <label for="inviteMessage">Personal Message (Optional)</label>
-                        <textarea id="inviteMessage" rows="3" placeholder="Join our family Secret Santa!" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; font-family: inherit;"></textarea>
+                        <textarea id="inviteMessage" rows="3" placeholder="Join our family Secret Santa!" aria-describedby="invite-message-help" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; font-family: inherit;"></textarea>
+                        <small id="invite-message-help" class="sr-only">Optional personal message to include in the invitation email</small>
                     </div>
                     
                     <div class="invite-preview" style="background: #f0fdf4; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
