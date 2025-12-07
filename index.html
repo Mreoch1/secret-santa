@@ -102,10 +102,10 @@
     </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7613712367456313"
      crossorigin="anonymous" onerror="console.warn('Ad script failed to load');"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-    <script src="config.js" defer></script>
-    <script src="analytics.js" defer></script>
-    <script src="home.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="console.error('Failed to load Supabase');"></script>
+    <script src="config.js" defer onerror="console.error('Failed to load config.js');"></script>
+    <script src="analytics.js" defer onerror="console.warn('Analytics failed to load');"></script>
+    <script src="home.js" defer onerror="console.error('Failed to load home.js');"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -129,6 +129,7 @@
         }
         .loader {
             text-align: center;
+            display: none; /* Hidden by default, shown only when redirecting logged-in users */
         }
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
@@ -146,6 +147,7 @@
             margin-top: 30px;
             line-height: 1.8;
             text-align: left;
+            display: block; /* Visible by default for SEO and crawlers */
         }
         .content h2 {
             text-align: center;
@@ -208,6 +210,12 @@
                 </li>
             </ol>
         </nav>
+        <noscript>
+            <style>
+                .loader { display: none !important; }
+                .content { display: block !important; }
+            </style>
+        </noscript>
         <div class="loader">
             <div class="spinner"></div>
             <h1>Free Secret Santa Name Generator & Holiday Gift Exchange</h1>
