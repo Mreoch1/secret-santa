@@ -3,16 +3,24 @@
         const seoContent = document.getElementById('seo-content');
         const loader = document.querySelector('.loader');
 
-        if (seoContent && loader) {
-            seoContent.style.display = 'none';
-            loader.style.display = 'block';
+        // Show SEO content by default for SEO and crawlers
+        // Hide loader by default
+        if (seoContent) {
+            seoContent.style.display = 'block';
+        }
+        if (loader) {
+            loader.style.display = 'none';
         }
 
+        // Check if Supabase is available before trying to redirect
         if (!window.supabase || typeof window.supabase.createClient !== 'function') {
-            console.error('Supabase not loaded on homepage');
-            if (seoContent && loader) {
-                loader.style.display = 'block';
-            }
+            // Supabase not loaded - keep SEO content visible for crawlers
+            return;
+        }
+
+        // Check if SUPABASE_URL and SUPABASE_ANON_KEY are defined
+        if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+            // Config not loaded - keep SEO content visible
             return;
         }
 
@@ -22,17 +30,23 @@
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
 
+                // Only redirect logged-in users to dashboard
+                // Non-logged-in users stay on homepage to see SEO content
                 if (session) {
-                    window.location.href = 'dashboard.html';
-                } else {
-                    window.location.href = 'auth.html';
+                    // Hide SEO content and show loader before redirect
+                    if (seoContent) seoContent.style.display = 'none';
+                    if (loader) loader.style.display = 'block';
+                    // Small delay to ensure smooth transition
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 100);
                 }
+                // If no session, do nothing - let users see the SEO content
             } catch (error) {
                 console.error('Error checking session on homepage', error);
-                if (seoContent && loader) {
-                    loader.style.display = 'none';
-                    seoContent.style.display = 'block';
-                }
+                // On error, ensure SEO content is visible
+                if (seoContent) seoContent.style.display = 'block';
+                if (loader) loader.style.display = 'none';
             }
         })();
     }
