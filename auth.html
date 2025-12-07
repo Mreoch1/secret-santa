@@ -22,11 +22,11 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="toast.css">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7613712367456313"
-     crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-    <script src="analytics.js" defer></script>
-    <script src="sentry.js" defer></script>
-    <script src="toast.js" defer></script>
+     crossorigin="anonymous" onerror="console.warn('Ad script failed to load');"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer onerror="console.error('Failed to load Supabase');"></script>
+    <script src="analytics.js" defer onerror="console.warn('Analytics failed to load');"></script>
+    <script src="sentry.js" defer onerror="console.warn('Sentry failed to load');"></script>
+    <script src="toast.js" defer onerror="console.error('Toast failed to load');"></script>
 </head>
 <body>
     <!-- Skip Link for Accessibility -->
@@ -181,8 +181,8 @@
         </p>
     </footer>
 
-    <script src="config.js" defer></script>
-    <script src="auth.js" defer></script>
+    <script src="config.js" defer onerror="console.error('Failed to load config.js - auth will not work');"></script>
+    <script src="auth.js" defer onerror="console.error('Failed to load auth.js');"></script>
 </body>
 </html>
 

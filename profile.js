@@ -4,6 +4,23 @@ let currentUser = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+    // Check if Supabase and config are available
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+        console.error('Supabase library not loaded');
+        if (window.Toast) {
+            Toast.error('Failed to load required libraries. Please refresh the page.');
+        }
+        return;
+    }
+    
+    if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+        console.error('Supabase configuration not loaded');
+        if (window.Toast) {
+            Toast.error('Configuration error. Please refresh the page.');
+        }
+        return;
+    }
+    
     // Initialize Supabase
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
