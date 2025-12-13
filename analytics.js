@@ -153,10 +153,9 @@ const Analytics = {
     },
     
     // Track user sign in
+    // Note: user_id should be set BEFORE calling this via updateUserType(true, userId)
     signIn: function(method = 'email') {
         if (window.gtag) {
-            // Update user type to logged_in
-            this.updateUserType(true);
             gtag('event', 'login', this._enrichParams({
                 method: method
             }));
