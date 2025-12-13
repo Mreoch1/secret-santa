@@ -58,6 +58,9 @@
             // user_id set later via updateUserType() when user logs in
         });
         
+        // Store GA_MEASUREMENT_ID globally for use in updateUserType
+        window.GA_MEASUREMENT_ID = GA_MEASUREMENT_ID;
+        
         // Set user property for device type (optional - also sent as event param)
         gtag('set', { 'user_properties': {
             'device_type': getDeviceType()
@@ -101,30 +104,38 @@ const Analytics = {
     },
     
     // Update user type and user_id when auth state changes
-    // CRITICAL: user_id must be set before events fire to ensure attribution
+    // CRITICAL: user_id must be set via gtag('config') BEFORE events fire to ensure attribution
     updateUserType: function(isLoggedIn, userId = null) {
-        if (window.gtag && window._analyticsHelpers) {
+        if (window.gtag && window._analyticsHelpers && window.GA_MEASUREMENT_ID) {
             const userType = isLoggedIn ? 'logged_in' : 'anonymous';
-            const userProps = {
-                'user_type': userType
-            };
             
-            // Set user_id for cross-device tracking (only when logged in)
-            // Use gtag('set') to update config - this ensures attribution on subsequent events
+            // Set user_id via gtag('config') - this is the recommended method
             if (isLoggedIn && userId) {
+                gtag('config', window.GA_MEASUREMENT_ID, { 
+                    'user_id': userId
+                });
                 gtag('set', { 
-                    'user_id': userId,
-                    'user_properties': userProps
+                    'user_properties': { 
+                        'user_type': userType 
+                    }
                 });
             } else if (!isLoggedIn) {
                 // Clear user_id when logged out
+                gtag('config', window.GA_MEASUREMENT_ID, { 
+                    'user_id': null
+                });
                 gtag('set', { 
-                    'user_id': null,
-                    'user_properties': userProps
+                    'user_properties': { 
+                        'user_type': userType 
+                    }
                 });
             } else {
                 // Just update user properties if no user_id change
-                gtag('set', { 'user_properties': userProps });
+                gtag('set', { 
+                    'user_properties': { 
+                        'user_type': userType 
+                    }
+                });
             }
             
             // Update the helper function's return value
@@ -166,10 +177,11 @@ const Analytics = {
     // Note: group_code removed to avoid PII - codes may contain user-created names
     createGroup: function(groupCode) {
         if (window.gtag) {
-            gtag('event', 'create_group', this._enrichParams({
-                // value: 1 removed - not needed, event name is sufficient
-                // group_code removed - PII concern (may contain user-created names)
-            }));
+            const params = this._enrichParams({});
+            gtag('event', 'create_group', {
+                device_type: params.device_type,
+                user_type: params.user_type
+            });
         }
     },
     
@@ -185,10 +197,12 @@ const Analytics = {
     // Track name draw
     drawNames: function(participantCount) {
         if (window.gtag) {
-            gtag('event', 'draw_names', this._enrichParams({
-                participant_count: participantCount
-                // value removed - use participant_count param instead
-            }));
+            const params = this._enrichParams({});
+            gtag('event', 'draw_names', {
+                participant_count: participantCount,
+                device_type: params.device_type,
+                user_type: params.user_type
+            });
         }
     },
     
@@ -215,11 +229,12 @@ const Analytics = {
             }
             sessionStorage.setItem(sessionKey, 'true');
             
-            gtag('event', 'invite_sent', this._enrichParams({
-                invite_count: count
-                // value removed - use invite_count param instead
-                // group_id not sent - PII concern
-            }));
+            const params = this._enrichParams({});
+            gtag('event', 'invite_sent', {
+                invite_count: count,
+                device_type: params.device_type,
+                user_type: params.user_type
+            });
         }
     },
     

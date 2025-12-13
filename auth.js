@@ -107,10 +107,11 @@ async function handleSignIn(e) {
         if (error) throw error;
         
         // Update analytics user type and user_id BEFORE tracking login event
-        // This ensures user_id is set before the event fires for proper attribution
+        // CRITICAL: user_id must be set via gtag('config') before events fire
         if (window.Analytics) {
+            // Set user_id via gtag('config') - this ensures attribution
             Analytics.updateUserType(true, data.user.id);
-            // Small delay to ensure user_id is set before event fires
+            // Small delay to ensure user_id is applied before event fires
             setTimeout(() => {
                 Analytics.signIn();
             }, 100);

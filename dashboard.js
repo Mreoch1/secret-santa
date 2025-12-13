@@ -1846,6 +1846,10 @@ async function createGroup(groupCode, groupPassword, details = {}) {
 function setupEventListeners() {
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', async () => {
+        // Clear analytics user_id before signing out
+        if (window.Analytics) {
+            Analytics.updateUserType(false);
+        }
         await supabase.auth.signOut();
         window.location.href = 'auth.html';
     });

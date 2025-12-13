@@ -169,6 +169,10 @@ async function handleDeleteAccount() {
             // Continue anyway - the RPC function cleaned up all public data
         }
         
+        // Clear analytics user_id before signing out
+        if (window.Analytics) {
+            Analytics.updateUserType(false);
+        }
         // Sign out
         await supabase.auth.signOut();
         
