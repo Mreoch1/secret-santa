@@ -224,11 +224,9 @@ const Analytics = {
     },
     
     // Track signup completion (after email verification or session creation)
+    // Note: user_id should be set BEFORE calling this via updateUserType(true, userId)
     signupCompleted: function() {
         if (window.gtag) {
-            // Update user type to logged_in
-            // Note: user_id should be set BEFORE this event via updateUserType()
-            this.updateUserType(true);
             gtag('event', 'signup_completed', this._enrichParams({
                 // value removed - not needed, event name is sufficient
             }));
