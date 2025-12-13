@@ -118,9 +118,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     currentUser = session.user;
     
-    // Update analytics user type
+    // Update analytics user type and user_id
     if (window.Analytics) {
-        Analytics.updateUserType(true);
+        Analytics.updateUserType(true, currentUser.id);
     }
     
     // Load user profile
@@ -2332,8 +2332,8 @@ async function handleSendInvites() {
             
             Toast.success(message, 8000);
             
-            // Track invite sent event
-            Analytics.inviteSent(emailsSent);
+            // Track invite sent event (deduplicated per group per session)
+            Analytics.inviteSent(emailsSent, group.id);
         } else {
             // All failed - create copyable text as fallback
             let inviteText = `🎄 SECRET SANTA INVITATION 🎅\n\n`;

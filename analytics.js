@@ -97,13 +97,23 @@ const Analytics = {
         return params;
     },
     
-    // Update user type when auth state changes
-    updateUserType: function(isLoggedIn) {
+    // Update user type and user_id when auth state changes
+    updateUserType: function(isLoggedIn, userId = null) {
         if (window.gtag && window._analyticsHelpers) {
             const userType = isLoggedIn ? 'logged_in' : 'anonymous';
-            gtag('set', { 'user_properties': {
+            const userProps = {
                 'user_type': userType
-            }});
+            };
+            
+            // Set user_id for cross-device tracking (only when logged in)
+            if (isLoggedIn && userId) {
+                gtag('set', { 'user_id': userId });
+            } else if (!isLoggedIn) {
+                // Clear user_id when logged out
+                gtag('set', { 'user_id': null });
+            }
+            
+            gtag('set', { 'user_properties': userProps });
             // Update the helper function's return value
             window._analyticsHelpers.getUserType = () => userType;
         }
@@ -141,13 +151,14 @@ const Analytics = {
     },
     
     // Track group creation
+    // Note: group_code removed to avoid PII - codes may contain user-created names
     createGroup: function(groupCode) {
         if (window.gtag) {
             gtag('event', 'create_group', this._enrichParams({
                 event_category: 'engagement',
                 event_label: 'Group Created',
-                value: 1,
-                group_code: groupCode || null
+                value: 1
+                // group_code removed - PII concern (may contain user-created names)
             }));
         }
     },
@@ -188,13 +199,24 @@ const Analytics = {
     },
     
     // Track invite sent (specific event for invites)
-    inviteSent: function(count = 1) {
+    // Note: Not marked as conversion - can fire multiple times per user/session
+    // Use as funnel step, not conversion metric
+    inviteSent: function(count = 1, groupId = null) {
         if (window.gtag) {
+            // Deduplicate: only track once per group per session
+            const sessionKey = `invite_sent_${groupId || 'default'}`;
+            if (sessionStorage.getItem(sessionKey)) {
+                // Already tracked for this group in this session
+                return;
+            }
+            sessionStorage.setItem(sessionKey, 'true');
+            
             gtag('event', 'invite_sent', this._enrichParams({
                 event_category: 'engagement',
                 event_label: 'Invite Sent',
                 value: count,
                 invite_count: count
+                // group_id not sent - PII concern
             }));
         }
     },

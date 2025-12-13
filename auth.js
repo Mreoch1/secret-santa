@@ -106,9 +106,9 @@ async function handleSignIn(e) {
         
         if (error) throw error;
         
-        // Update analytics user type
+        // Update analytics user type and user_id
         if (window.Analytics) {
-            Analytics.updateUserType(true);
+            Analytics.updateUserType(true, data.user.id);
             Analytics.signIn();
         }
         
@@ -185,8 +185,8 @@ async function handleSignUp(e) {
         
         // If email confirmation is disabled, redirect to dashboard
         if (authData.session) {
-            // Update analytics user type
-            Analytics.updateUserType(true);
+            // Update analytics user type and user_id
+            Analytics.updateUserType(true, authData.user.id);
             // Track signup completion when session is immediately available
             Analytics.signupCompleted();
             window.location.href = 'index.html';
