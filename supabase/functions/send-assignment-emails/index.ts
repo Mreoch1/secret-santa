@@ -97,6 +97,12 @@ serve(async (req) => {
             
             <p>Remember to keep it a secret! 🤫</p>
             
+            <div style="margin-top: 30px; padding: 20px; background: #e8f5e9; border-radius: 10px; border-left: 4px solid #0f7c3a;">
+              <p style="margin: 0; color: #666; font-size: 0.9em;">
+                <strong>Need help?</strong> Visit our <a href="https://holidaydrawnames.com/support.html" style="color: #0f7c3a; text-decoration: underline;">support page</a> for assistance.
+              </p>
+            </div>
+            
             <div class="footer">
               <p>🎄 Secret Santa 2025 🎄</p>
               <p>Spreading holiday cheer, one gift at a time!</p>

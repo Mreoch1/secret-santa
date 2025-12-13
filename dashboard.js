@@ -118,6 +118,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     currentUser = session.user;
     
+    // Update analytics user type
+    if (window.Analytics) {
+        Analytics.updateUserType(true);
+    }
+    
     // Load user profile
     await loadUserProfile();
     
@@ -2033,6 +2038,12 @@ function createInviteEmailHtml(groupCode, groupPassword, personalMessage, sender
                 <li>Wait for the organizer to draw names</li>
                 <li>See who you got and start shopping! 🎅</li>
               </ol>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #e8f5e9; border-radius: 10px; border-left: 4px solid #0f7c3a;">
+              <p style="margin: 0; color: #666; font-size: 0.9em;">
+                <strong>Need help?</strong> Visit our <a href="${siteUrl}/support.html" style="color: #0f7c3a; text-decoration: underline;">support page</a> for assistance.
+              </p>
             </div>
             
             <div class="footer">
