@@ -21,8 +21,26 @@
         gtag('js', new Date());
         gtag('config', GA_MEASUREMENT_ID, {
             'anonymize_ip': true, // GDPR compliance
-            'cookie_flags': 'SameSite=None;Secure'
+            'cookie_flags': 'SameSite=None;Secure',
+            // Enhanced measurement
+            'send_page_view': true,
+            // Device and user tracking
+            'custom_map': {
+                'dimension1': 'device_type',
+                'dimension2': 'user_type' // new vs returning
+            }
         });
+        
+        // Track device type
+        const deviceType = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'mobile' : 'desktop';
+        gtag('set', { 'device_type': deviceType });
+        
+        // Track returning user
+        const isReturning = localStorage.getItem('has_visited') ? 'returning' : 'new';
+        if (!localStorage.getItem('has_visited')) {
+            localStorage.setItem('has_visited', 'true');
+        }
+        gtag('set', { 'user_type': isReturning });
         
         // Make gtag globally available
         window.gtag = gtag;
@@ -107,6 +125,28 @@ const Analytics = {
             gtag('event', 'send_email', {
                 event_category: 'communication',
                 event_label: type, // 'invite' or 'assignment'
+                value: 1
+            });
+        }
+    },
+    
+    // Track invite sent (specific event for invites)
+    inviteSent: function(count = 1) {
+        if (window.gtag) {
+            gtag('event', 'invite_sent', {
+                event_category: 'engagement',
+                event_label: 'Invite Sent',
+                value: count
+            });
+        }
+    },
+    
+    // Track signup completion (after email verification or session creation)
+    signupCompleted: function() {
+        if (window.gtag) {
+            gtag('event', 'signup_completed', {
+                event_category: 'conversion',
+                event_label: 'Signup Completed',
                 value: 1
             });
         }

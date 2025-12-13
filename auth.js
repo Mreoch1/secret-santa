@@ -179,6 +179,8 @@ async function handleSignUp(e) {
         
         // If email confirmation is disabled, redirect to dashboard
         if (authData.session) {
+            // Track signup completion when session is immediately available
+            Analytics.signupCompleted();
             window.location.href = 'index.html';
         } else {
             showPage('signInPage');

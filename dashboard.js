@@ -2289,6 +2289,9 @@ async function handleSendInvites() {
                             sent_by: currentUser.id
                         }, { onConflict: 'group_id,email' });
                     
+                    // Track individual invite sent
+                    Analytics.sendEmail('invite');
+                    
                 } else {
                     emailsFailed++;
                     console.error('Failed to send to', email, result.error);
@@ -2317,6 +2320,9 @@ async function handleSendInvites() {
             }
             
             Toast.success(message, 8000);
+            
+            // Track invite sent event
+            Analytics.inviteSent(emailsSent);
         } else {
             // All failed - create copyable text as fallback
             let inviteText = `🎄 SECRET SANTA INVITATION 🎅\n\n`;
