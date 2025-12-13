@@ -1,5 +1,7 @@
 // Support Ticket Form Handler
 let supabase;
+let formLoadTime = Date.now();
+const MIN_SUBMIT_DELAY_MS = 3000; // 3 seconds minimum
 
 // Initialize Supabase client
 async function initSupport() {
@@ -48,10 +50,38 @@ async function initSupport() {
         // Continue anyway - support form can work without auth
     }
 
+    // Enable submit button after delay
+    const submitBtn = document.getElementById('submitBtn');
+    const delayMessage = document.getElementById('submitDelayMessage');
+    
+    setTimeout(() => {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+        }
+        if (delayMessage) {
+            delayMessage.style.display = 'none';
+        }
+    }, MIN_SUBMIT_DELAY_MS);
+
     // Set up form handler
     const form = document.getElementById('supportForm');
     if (form) {
         form.addEventListener('submit', handleSupportSubmit);
+        
+        // Character counter for message
+        const messageField = document.getElementById('supportMessage');
+        const charCount = document.getElementById('messageCharCount');
+        if (messageField && charCount) {
+            messageField.addEventListener('input', () => {
+                const remaining = 2000 - messageField.value.length;
+                charCount.textContent = `${messageField.value.length} / 2000`;
+                if (remaining < 50) {
+                    charCount.style.color = 'var(--primary-red)';
+                } else {
+                    charCount.style.color = 'var(--neutral-600)';
+                }
+            });
+        }
     }
 }
 

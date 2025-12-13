@@ -106,10 +106,14 @@ async function handleSignIn(e) {
         
         if (error) throw error;
         
-        // Update analytics user type and user_id
+        // Update analytics user type and user_id BEFORE tracking login event
+        // This ensures user_id is set before the event fires for proper attribution
         if (window.Analytics) {
             Analytics.updateUserType(true, data.user.id);
-            Analytics.signIn();
+            // Small delay to ensure user_id is set before event fires
+            setTimeout(() => {
+                Analytics.signIn();
+            }, 100);
         }
         
         // Successful login - redirect to dashboard
@@ -185,10 +189,13 @@ async function handleSignUp(e) {
         
         // If email confirmation is disabled, redirect to dashboard
         if (authData.session) {
-            // Update analytics user type and user_id
+            // Update analytics user type and user_id BEFORE tracking signup_completed
+            // This ensures user_id is set before the conversion event fires
             Analytics.updateUserType(true, authData.user.id);
-            // Track signup completion when session is immediately available
-            Analytics.signupCompleted();
+            // Small delay to ensure user_id is set before event fires
+            setTimeout(() => {
+                Analytics.signupCompleted();
+            }, 100);
             window.location.href = 'index.html';
         } else {
             showPage('signInPage');

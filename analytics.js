@@ -49,10 +49,13 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
+        
+        // Initial config (user_id will be set later when user logs in)
         gtag('config', GA_MEASUREMENT_ID, {
             'anonymize_ip': true, // GDPR compliance
             'cookie_flags': 'SameSite=None;Secure',
             'send_page_view': true
+            // user_id set later via updateUserType() when user logs in
         });
         
         // Set user property for device type (optional - also sent as event param)
@@ -98,6 +101,7 @@ const Analytics = {
     },
     
     // Update user type and user_id when auth state changes
+    // CRITICAL: user_id must be set before events fire to ensure attribution
     updateUserType: function(isLoggedIn, userId = null) {
         if (window.gtag && window._analyticsHelpers) {
             const userType = isLoggedIn ? 'logged_in' : 'anonymous';
@@ -106,14 +110,23 @@ const Analytics = {
             };
             
             // Set user_id for cross-device tracking (only when logged in)
+            // Use gtag('set') to update config - this ensures attribution on subsequent events
             if (isLoggedIn && userId) {
-                gtag('set', { 'user_id': userId });
+                gtag('set', { 
+                    'user_id': userId,
+                    'user_properties': userProps
+                });
             } else if (!isLoggedIn) {
                 // Clear user_id when logged out
-                gtag('set', { 'user_id': null });
+                gtag('set', { 
+                    'user_id': null,
+                    'user_properties': userProps
+                });
+            } else {
+                // Just update user properties if no user_id change
+                gtag('set', { 'user_properties': userProps });
             }
             
-            gtag('set', { 'user_properties': userProps });
             // Update the helper function's return value
             window._analyticsHelpers.getUserType = () => userType;
         }
@@ -155,9 +168,7 @@ const Analytics = {
     createGroup: function(groupCode) {
         if (window.gtag) {
             gtag('event', 'create_group', this._enrichParams({
-                event_category: 'engagement',
-                event_label: 'Group Created',
-                value: 1
+                // value: 1 removed - not needed, event name is sufficient
                 // group_code removed - PII concern (may contain user-created names)
             }));
         }
@@ -167,9 +178,7 @@ const Analytics = {
     joinGroup: function() {
         if (window.gtag) {
             gtag('event', 'join_group', this._enrichParams({
-                event_category: 'engagement',
-                event_label: 'Joined Group',
-                value: 1
+                // No additional params needed
             }));
         }
     },
@@ -178,10 +187,8 @@ const Analytics = {
     drawNames: function(participantCount) {
         if (window.gtag) {
             gtag('event', 'draw_names', this._enrichParams({
-                event_category: 'engagement',
-                event_label: 'Names Drawn',
-                value: participantCount,
                 participant_count: participantCount
+                // value removed - use participant_count param instead
             }));
         }
     },
@@ -190,10 +197,8 @@ const Analytics = {
     sendEmail: function(type) {
         if (window.gtag) {
             gtag('event', 'send_email', this._enrichParams({
-                event_category: 'communication',
-                event_label: type, // 'invite' or 'assignment'
-                value: 1,
                 email_type: type
+                // value removed - not needed
             }));
         }
     },
@@ -212,10 +217,8 @@ const Analytics = {
             sessionStorage.setItem(sessionKey, 'true');
             
             gtag('event', 'invite_sent', this._enrichParams({
-                event_category: 'engagement',
-                event_label: 'Invite Sent',
-                value: count,
                 invite_count: count
+                // value removed - use invite_count param instead
                 // group_id not sent - PII concern
             }));
         }
@@ -225,11 +228,10 @@ const Analytics = {
     signupCompleted: function() {
         if (window.gtag) {
             // Update user type to logged_in
+            // Note: user_id should be set BEFORE this event via updateUserType()
             this.updateUserType(true);
             gtag('event', 'signup_completed', this._enrichParams({
-                event_category: 'conversion',
-                event_label: 'Signup Completed',
-                value: 1
+                // value removed - not needed, event name is sufficient
             }));
         }
     },
@@ -239,9 +241,8 @@ const Analytics = {
         if (window.gtag) {
             gtag('event', 'exception', this._enrichParams({
                 description: errorMessage,
-                fatal: false,
-                event_category: 'error',
-                event_label: errorContext
+                fatal: false
+                // event_category and event_label removed - not used in GA4
             }));
         }
     },

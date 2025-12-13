@@ -5,10 +5,51 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const ADMIN_EMAIL = 'mreoch82@hotmail.com'
 const SITE_URL = Deno.env.get('SITE_URL') || 'https://holidaydrawnames.com'
+const WEBHOOK_SECRET = Deno.env.get('SUPPORT_WEBHOOK_SECRET')
+
+// Rate limiting: simple in-memory store (per region)
+// Better: use database rate_limits table
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000 // 1 hour
+const MAX_REQUESTS_PER_WINDOW = 10 // Max notifications per IP per hour
 
 serve(async (req) => {
   try {
-    // Get the new ticket from the request
+    // 1. Verify webhook secret (CRITICAL: Do not use anon key)
+    const webhookSecret = req.headers.get('x-support-secret')
+    if (!WEBHOOK_SECRET || webhookSecret !== WEBHOOK_SECRET) {
+      console.error('Invalid or missing webhook secret')
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // 2. Rate limiting (simple in-memory per region)
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown'
+    const now = Date.now()
+    const rateKey = `support_notify_${clientIP}`
+    
+    const rateLimit = rateLimitStore.get(rateKey)
+    if (rateLimit) {
+      if (now < rateLimit.resetAt) {
+        if (rateLimit.count >= MAX_REQUESTS_PER_WINDOW) {
+          console.warn(`Rate limit exceeded for IP: ${clientIP}`)
+          return new Response(
+            JSON.stringify({ error: 'Rate limit exceeded' }),
+            { status: 429, headers: { 'Content-Type': 'application/json' } }
+          )
+        }
+        rateLimit.count++
+      } else {
+        // Reset window
+        rateLimitStore.set(rateKey, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS })
+      }
+    } else {
+      rateLimitStore.set(rateKey, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS })
+    }
+
+    // 3. Validate payload shape
     const { record } = await req.json()
     
     if (!record) {
@@ -16,6 +57,56 @@ serve(async (req) => {
         JSON.stringify({ error: 'No record provided' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       )
+    }
+
+    // Validate required fields
+    if (!record.id || !record.email || !record.message) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid payload: missing required fields' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // 4. Check if we've notified recently (deduplication)
+    // Fetch ticket from database to check last_notified_at
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    
+    if (supabaseUrl && supabaseServiceKey) {
+      const supabase = createClient(supabaseUrl, supabaseServiceKey)
+      
+      const { data: ticket, error: fetchError } = await supabase
+        .from('support_tickets')
+        .select('id, last_notified_at, spam_score')
+        .eq('id', record.id)
+        .single()
+      
+      if (fetchError) {
+        console.error('Error fetching ticket:', fetchError)
+        // Continue anyway - might be a new ticket
+      } else if (ticket) {
+        // Check if notified in last 5 minutes (deduplication)
+        if (ticket.last_notified_at) {
+          const lastNotified = new Date(ticket.last_notified_at).getTime()
+          const fiveMinutesAgo = Date.now() - (5 * 60 * 1000)
+          if (lastNotified > fiveMinutesAgo) {
+            console.log(`Skipping notification - already notified recently for ticket ${record.id}`)
+            return new Response(
+              JSON.stringify({ success: true, message: 'Skipped - recent notification' }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } }
+            )
+          }
+        }
+        
+        // Skip if spam score is too high
+        if (ticket.spam_score && ticket.spam_score >= 5) {
+          console.log(`Skipping notification - high spam score for ticket ${record.id}`)
+          return new Response(
+            JSON.stringify({ success: true, message: 'Skipped - spam detected' }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          )
+        }
+      }
     }
 
     // Extract ticket information

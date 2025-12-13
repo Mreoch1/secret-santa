@@ -47,6 +47,18 @@
                 <p>We're here to help! Fill out the form below and we'll get back to you as soon as possible.</p>
                 
                 <form id="supportForm" class="support-form">
+                    <!-- Honeypot field (hidden from users, bots will fill it) -->
+                    <div class="form-group" style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;">
+                        <label for="supportWebsite">Website (leave blank)</label>
+                        <input 
+                            type="text" 
+                            id="supportWebsite" 
+                            name="website" 
+                            tabindex="-1"
+                            autocomplete="off"
+                        >
+                    </div>
+
                     <div class="form-group">
                         <label for="supportName">Your Name <span style="color: var(--primary-red);">*</span></label>
                         <input 
@@ -54,11 +66,12 @@
                             id="supportName" 
                             name="name" 
                             required 
+                            maxlength="120"
                             autocomplete="name"
                             placeholder="Enter your full name"
                             aria-describedby="name-help"
                         >
-                        <small id="name-help" class="sr-only">Enter your full name</small>
+                        <small id="name-help" class="sr-only">Enter your full name (max 120 characters)</small>
                     </div>
 
                     <div class="form-group">
@@ -68,6 +81,7 @@
                             id="supportEmail" 
                             name="email" 
                             required 
+                            maxlength="255"
                             autocomplete="email"
                             placeholder="you@example.com"
                             aria-describedby="email-help"
@@ -81,6 +95,7 @@
                             type="text" 
                             id="supportGroupCode" 
                             name="group_code" 
+                            maxlength="50"
                             placeholder="e.g., SANTA2024"
                             aria-describedby="group-code-help"
                         >
@@ -93,16 +108,21 @@
                             id="supportMessage" 
                             name="message" 
                             required 
+                            maxlength="2000"
                             rows="6"
                             placeholder="Describe your issue or question in detail..."
                             aria-describedby="message-help"
                         ></textarea>
-                        <small id="message-help">Please provide as much detail as possible so we can help you quickly</small>
+                        <small id="message-help">Please provide as much detail as possible so we can help you quickly (max 2000 characters)</small>
+                        <div id="messageCharCount" style="text-align: right; color: var(--neutral-600); font-size: var(--text-sm); margin-top: var(--space-1);">0 / 2000</div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
                         Submit Support Ticket 🎁
                     </button>
+                    <div id="submitDelayMessage" style="margin-top: var(--space-2); color: var(--neutral-600); font-size: var(--text-sm); text-align: center;">
+                        Please wait a moment before submitting...
+                    </div>
                 </form>
 
                 <div id="successMessage" class="hidden" style="margin-top: var(--space-6); padding: var(--space-6); background: var(--festive-light-green); border: 2px solid var(--primary-green); border-radius: var(--radius-lg);">
